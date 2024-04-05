@@ -27,7 +27,6 @@ public class ChecklistApiController {
     @PostMapping("/api/checklists")
     public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) {
         Checklist savedChecklist = checklistService.save(request);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedChecklist);
     }

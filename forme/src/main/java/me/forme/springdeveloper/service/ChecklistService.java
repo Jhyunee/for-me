@@ -14,6 +14,10 @@ public class ChecklistService {
 
     private final ChecklistRepository checklistRepository;
 
+    public List<Checklist> findAll() {
+        return checklistRepository.findAll();
+    }
+
     //체크리스트 조회 메서드
     public List<Checklist> index() {
         return checklistRepository.findAll();
@@ -37,8 +41,6 @@ public class ChecklistService {
         // 4. 업데이트 및 정상 응답(200)하기
         Checklist updated = checklistRepository.save(checklist);
         return updated;
-
-
     }
 
     //체크리스트 삭제 메서드
