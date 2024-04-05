@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Checklist {
 
+    //체크리스트 아이디
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -26,6 +27,7 @@ public class Checklist {
     @Column(name = "category")
     private String category;
 
+    //사용자아이디
     @Column(name = "user_id", nullable = false)
     private Long user_id;
 
