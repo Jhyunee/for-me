@@ -3,6 +3,7 @@ package me.forme.springdeveloper.controller;
 import lombok.RequiredArgsConstructor;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class ChecklistApiController {
     private final ChecklistService checklistService;
 
     //체크리스트 조회
-    @GetMapping("/checklists")
+    @GetMapping("/api/checklists")
     public List<Checklist> index(){
         return checklistService.index();
     }
@@ -32,8 +33,8 @@ public class ChecklistApiController {
     }
 
     //체크리스트 수정
-    @PutMapping("/api/checklists/{id}")
-    public ResponseEntity<Checklist> update(@PathVariable Long id, @RequestBody AddChecklistRequest dto){
+    @PatchMapping("/api/checklists/{id}")
+    public ResponseEntity<Checklist> update(@PathVariable Long id, @RequestBody UpdateChecklistRequest dto){
         Checklist updated = checklistService.update(id, dto);
         return (updated != null) ?
                 ResponseEntity.status(HttpStatus.OK).body(updated) :

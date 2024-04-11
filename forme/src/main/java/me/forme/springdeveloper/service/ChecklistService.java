@@ -3,6 +3,7 @@ package me.forme.springdeveloper.service;
 import lombok.RequiredArgsConstructor;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.repository.ChecklistRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,18 +30,11 @@ public class ChecklistService {
     }
 
     //체크리스트 수정 메서드
-    public Checklist update(Long id, AddChecklistRequest dto) {
-        // 1. DTO -> 엔티티 변환
-        Checklist checklist = dto.toEntity();
-        // 2. 타깃 조회하기
-        Checklist target = checklistRepository.findById(id).orElse(null);
-        // 3. 잘못된 요청 처리하기
-        if (target == null || id != checklist.getId()){
-            return null; // 응답은 컨트롤러가 하므로 여기서는 null 반환
-        }
-        // 4. 업데이트 및 정상 응답(200)하기
-        Checklist updated = checklistRepository.save(checklist);
-        return updated;
+    public Checklist update(Long id, UpdateChecklistRequest request) {
+        Checklist checklist = checklistRepository.findById(id).orElse(null);
+        checklist.update(request.getName(), request.getUser_id());
+        checklistRepository.save(checklist);
+        return checklist;
     }
 
     //체크리스트 삭제 메서드

@@ -48,4 +48,10 @@ public class Checklist {
         this.name = name;
         this.user_id = user_id;
     }
+
+    public void update(String name, Long user_id) {
+        this.name = name;
+        this.user_id = user_id;
+    }
+
 }
