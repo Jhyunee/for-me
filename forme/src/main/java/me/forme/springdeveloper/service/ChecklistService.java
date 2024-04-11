@@ -1,5 +1,6 @@
 package me.forme.springdeveloper.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
@@ -30,6 +31,7 @@ public class ChecklistService {
     }
 
     //체크리스트 수정 메서드
+    @Transactional
     public Checklist update(Long id, UpdateChecklistRequest request) {
         Checklist checklist = checklistRepository.findById(id).orElse(null);
         checklist.update(request.getName(), request.getUser_id());
