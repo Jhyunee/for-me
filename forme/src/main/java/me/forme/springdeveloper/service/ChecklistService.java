@@ -8,6 +8,7 @@ import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.repository.ChecklistRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,10 +35,13 @@ public class ChecklistService {
     @Transactional
     public Checklist update(Long id, UpdateChecklistRequest request) {
         Checklist checklist = checklistRepository.findById(id).orElse(null);
-        checklist.update(request.getName(), request.getUser_id());
-        checklistRepository.save(checklist);
+        if(checklist != null) {
+            checklist.update(request.getName(), request.getUser_id(), LocalDateTime.now());
+            checklistRepository.save(checklist);
+        }
         return checklist;
     }
+
 
     //체크리스트 삭제 메서드
     public Checklist delete(Long id) {

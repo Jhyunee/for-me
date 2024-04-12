@@ -52,12 +52,12 @@ public class CServiceApiController {
     }
 
     // 고객센터 글 수정
-    @PutMapping("/api/mypage/services/{id}")
-    public ResponseEntity<CService> updateService(@PathVariable long id,
-                                                  @RequestBody UpdateCServiceRequest request) {
+    @PatchMapping("/api/mypage/services/{id}")
+    public ResponseEntity<CService> updateService(@PathVariable long id, @RequestBody UpdateCServiceRequest request) {
         CService updatedService = cServiceService.update(id, request);
 
-        return ResponseEntity.ok()
-                .body(updatedService);
+        return (updatedService != null) ?
+                ResponseEntity.status(HttpStatus.OK).body(updatedService) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

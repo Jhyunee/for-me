@@ -10,6 +10,7 @@ import me.forme.springdeveloper.repository.CServiceRepository;
 import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,10 +40,11 @@ public class CServiceService {
     // 고객센터 글 수정 메서드
     @Transactional
     public CService update(long id, UpdateCServiceRequest request) {
-        CService service = cServiceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
-
-        service.update(request.getTitle(), request.getContent());
+        CService service = cServiceRepository.findById(id).orElse(null);
+        if(service != null) {
+            service.update(request.getTitle(), request.getContent(), LocalDateTime.now());
+            cServiceRepository.save(service);
+        }
         return service;
     }
 }
