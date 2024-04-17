@@ -21,6 +21,10 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
+    public List<Checklist> findByDate(LocalDateTime dateTime) {
+        return checklistRepository.findByCreatedAt(dateTime);
+    }
+
     //체크리스트 조회 메서드
     public List<Checklist> index() {
         return checklistRepository.findAll();
