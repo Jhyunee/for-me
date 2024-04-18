@@ -25,23 +25,25 @@ public class ChecklistApiController {
 
     private LocalDate dateTime = LocalDate.now();
 
-    //체크리스트 조회
+    //체크리스트 조회 (오늘)
     @GetMapping("/api/checklists")
     public List<Checklist> index(){
-        return checklistService.index();
+        return checklistService.findByDate(LocalDate.now());
     }
 
+    //체크리스트 조회 (전날)
     @GetMapping("/api/checklists/minus")
     public List<Checklist> minus() {
         dateTime = dateTime.minusDays(1);
-        log.info("어제 날짜 : "+dateTime);
+        log.info("어제 날짜 : " + dateTime);
         return checklistService.findByDate(dateTime);
     }
 
+    //체크리스트 조회 (다음날)
     @GetMapping("/api/checklists/plus")
     public List<Checklist> plus() {
         dateTime = dateTime.plusDays(1);
-        log.info("오늘 날짜 : "+dateTime);
+        log.info("오늘 날짜 : " + dateTime);
         return checklistService.findByDate(dateTime);
     }
 

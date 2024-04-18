@@ -23,13 +23,12 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
+    //체크리스트 조회 메서드
+//    public List<Checklist> index() {
+//        return checklistRepository.findAll();
+//    }
     public List<Checklist> findByDate(LocalDate dateTime) {
         return checklistRepository.findByCreatedAt(dateTime);
-    }
-
-    //체크리스트 조회 메서드
-    public List<Checklist> index() {
-        return checklistRepository.findAll();
     }
 
     //체크리스트 추가 메서드
