@@ -8,7 +8,9 @@ import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.repository.ChecklistRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
-    public List<Checklist> findByDate(LocalDateTime dateTime) {
+    public List<Checklist> findByDate(LocalDate dateTime) {
         return checklistRepository.findByCreatedAt(dateTime);
     }
 
@@ -40,7 +42,17 @@ public class ChecklistService {
     public Checklist update(Long id, UpdateChecklistRequest request) {
         Checklist checklist = checklistRepository.findById(id).orElse(null);
         if(checklist != null) {
-            checklist.update(request.getName(), request.getUser_id(), LocalDateTime.now());
+            checklist.update(request.getName(), request.getUser_id(), LocalTime.now());
+            checklistRepository.save(checklist);
+        }
+        return checklist;
+    }
+
+    @Transactional
+    public Checklist check(Long id) {
+        Checklist checklist = checklistRepository.findById(id).orElse(null);
+        if(checklist != null) {
+            checklist.check();
             checklistRepository.save(checklist);
         }
         return checklist;

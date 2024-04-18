@@ -10,7 +10,9 @@ import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -34,15 +36,15 @@ public class CService {
     @CreatedDate
     @Column(name = "created_at")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
     @JsonFormat(pattern = "HH:mm")
-    private LocalDateTime updatedAt;
+    private LocalTime updatedAt;
 
     @Builder
-    public CService(long user_id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CService(long user_id, String title, String content, LocalDate createdAt, LocalTime updatedAt) {
         this.user_id = user_id;
         this.title = title;
         this.content = content;
@@ -50,7 +52,7 @@ public class CService {
         this.updatedAt = updatedAt;
     }
 
-    public void update(String title, String content, LocalDateTime updatedAt) {
+    public void update(String title, String content, LocalTime updatedAt) {
         this.title = title;
         this.content = content;
         this.updatedAt = updatedAt;

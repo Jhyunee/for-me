@@ -6,11 +6,12 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
-    List<Checklist> findByCreatedAt(LocalDateTime createdAt);
+    List<Checklist> findByCreatedAt(LocalDate createdAt);
 
 }

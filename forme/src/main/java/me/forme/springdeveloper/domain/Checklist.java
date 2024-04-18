@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -35,30 +36,36 @@ public class Checklist {
 
     @CreatedDate
     @Column(name = "created_at")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
     @JsonFormat(pattern = "HH:mm")
-    private LocalDateTime updatedAt;
+    private LocalTime updatedAt;
 
     @Column(name = "done")
     private int done; //0: False, 1: True
 
 
     @Builder
-    public Checklist(String name, long user_id, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Checklist(String name, long user_id, LocalDate createdAt, LocalTime updatedAt) {
         this.name = name;
         this.user_id = user_id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public void update(String name, Long user_id, LocalDateTime updatedAt) {
+    public void update(String name, Long user_id, LocalTime updatedAt) {
         this.name = name;
         this.user_id = user_id;
         this.updatedAt = updatedAt;
+    }
+
+    public void check() {
+        if (this.done == 0){
+            this.done = 1;
+        }
+        else this.done = 0;
     }
 
 }

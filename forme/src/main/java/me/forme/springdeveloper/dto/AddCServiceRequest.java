@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,15 +20,15 @@ public class AddCServiceRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
     @DateTimeFormat(pattern = "HH:mm")
-    private LocalDateTime updatedAt;
+    private LocalTime updatedAt;
 
     public CService toEntity() {
         return CService.builder()
                 .user_id(user_id)
                 .title(title)
                 .content(content)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDate.now())
+                .updatedAt(LocalTime.now())
                 .build();
     }
 }

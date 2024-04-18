@@ -1,6 +1,7 @@
 package me.forme.springdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.ChecklistViewResponse;
 import me.forme.springdeveloper.service.ChecklistService;
@@ -14,22 +15,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class ChecklistViewController {
 
     private final ChecklistService checklistService;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime dateTime;
-
     @GetMapping("/checklists")
     public String getChecklist(Model model) {
-//        List<ChecklistViewResponse> checklist = checklistService.findAll()
-//                .stream()
-//                .map(ChecklistViewResponse::new)
-//                .toList();
-//        model.addAttribute("checklist", checklist);
-        dateTime = LocalDateTime.now();
-        List<ChecklistViewResponse> checklist = checklistService.findByDate(dateTime)
+        List<ChecklistViewResponse> checklist = checklistService.findAll()
                 .stream()
                 .map(ChecklistViewResponse::new)
                 .toList();

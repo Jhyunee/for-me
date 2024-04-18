@@ -8,6 +8,7 @@ import me.forme.springdeveloper.domain.Checklist;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Getter
@@ -15,9 +16,9 @@ public class ChecklistViewResponse {
     private String name;
     private Long user_id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime updatedAt;
+    private LocalTime updatedAt;
 
     public ChecklistViewResponse(Checklist checklist) {
         this.name = checklist.getName();

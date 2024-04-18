@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,14 +20,14 @@ public class AddChecklistRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
     @DateTimeFormat(pattern = "HH:mm")
-    private LocalDateTime updatedAt;
+    private LocalTime updatedAt;
 
         public Checklist toEntity() {
         return Checklist.builder()
                 .name(name)
                 .user_id(user_id)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDate.now())
+                .updatedAt(LocalTime.now())
                 .build();
     }
 }

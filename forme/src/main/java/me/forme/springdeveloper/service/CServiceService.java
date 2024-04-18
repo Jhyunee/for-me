@@ -11,6 +11,7 @@ import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class CServiceService {
     public CService update(long id, UpdateCServiceRequest request) {
         CService service = cServiceRepository.findById(id).orElse(null);
         if(service != null) {
-            service.update(request.getTitle(), request.getContent(), LocalDateTime.now());
+            service.update(request.getTitle(), request.getContent(), LocalTime.now());
             cServiceRepository.save(service);
         }
         return service;
