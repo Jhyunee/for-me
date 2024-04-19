@@ -18,15 +18,6 @@ public class CServiceApiController {
 
     private final CServiceService cServiceService;
 
-    // 고객센터 글 등록
-    @PostMapping("/api/mypage/services")
-    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request) {
-        CService savedService = cServiceService.save(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedService);
-    }
-
     // 고객센터 글 목록 조회
     @GetMapping("/api/mypage/services")
     public List<CService> findAllServices(){
@@ -40,6 +31,15 @@ public class CServiceApiController {
 
         return ResponseEntity.ok()
                 .body(new CServiceResponse(service));
+    }
+
+    // 고객센터 글 등록
+    @PostMapping("/api/mypage/services")
+    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request) {
+        CService savedService = cServiceService.save(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedService);
     }
 
     // 고객센터 글 삭제

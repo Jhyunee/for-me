@@ -23,38 +23,6 @@ public class ChecklistApiController {
 
     private final ChecklistService checklistService;
 
-    private LocalDate dateTime = LocalDate.now();
-
-    //체크리스트 조회 (오늘)
-    @GetMapping("/api/checklists")
-    public List<Checklist> index(){
-        return checklistService.findByDate(LocalDate.now());
-    }
-
-    //체크리스트 조회 (전날)
-    @GetMapping("/api/checklists/minus")
-    public List<Checklist> minus() {
-        dateTime = dateTime.minusDays(1);
-        log.info("어제 날짜 : " + dateTime);
-        return checklistService.findByDate(dateTime);
-    }
-
-    //체크리스트 조회 (다음날)
-    @GetMapping("/api/checklists/plus")
-    public List<Checklist> plus() {
-        dateTime = dateTime.plusDays(1);
-        log.info("오늘 날짜 : " + dateTime);
-        return checklistService.findByDate(dateTime);
-    }
-
-    //체크리스트 생성
-    @PostMapping("/api/checklists")
-    public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) {
-        Checklist savedChecklist = checklistService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedChecklist);
-    }
-
     //체크리스트 수정
     @PatchMapping("/api/checklists/{id}")
     public ResponseEntity<Checklist> update(@PathVariable Long id,
