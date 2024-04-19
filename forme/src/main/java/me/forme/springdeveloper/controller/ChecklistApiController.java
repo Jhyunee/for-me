@@ -2,7 +2,9 @@ package me.forme.springdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.forme.springdeveloper.domain.CService;
 import me.forme.springdeveloper.domain.Checklist;
+import me.forme.springdeveloper.dto.AddCServiceRequest;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
@@ -22,6 +24,21 @@ import java.util.List;
 public class ChecklistApiController {
 
     private final ChecklistService checklistService;
+
+    //체크리스트 조회
+    @GetMapping("/api/checklists")
+    public List<Checklist> index() {
+        return checklistService.findAll();
+    }
+
+    //체크리스트 등록
+    @PostMapping("/api/checklists")
+    public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) {
+        Checklist savedChecklist = checklistService.save(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedChecklist);
+    }
 
     //체크리스트 수정
     @PatchMapping("/api/checklists/{id}")

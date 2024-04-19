@@ -21,7 +21,7 @@ public class Checklist {
     //체크리스트 아이디
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
