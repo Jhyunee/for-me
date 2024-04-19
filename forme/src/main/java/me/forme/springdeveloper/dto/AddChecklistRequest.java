@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @Getter
 public class AddChecklistRequest {
     private String name;
-    private Long user_id;
+    private String user_id;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
     @DateTimeFormat(pattern = "HH:mm")

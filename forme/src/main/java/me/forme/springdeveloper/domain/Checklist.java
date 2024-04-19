@@ -32,7 +32,7 @@ public class Checklist {
 
     //사용자아이디
     @Column(name = "user_id", nullable = false)
-    private Long user_id;
+    private String user_id;
 
     @CreatedDate
     @Column(name = "created_at")
@@ -48,14 +48,14 @@ public class Checklist {
 
 
     @Builder
-    public Checklist(String name, long user_id, LocalDate createdAt, LocalTime updatedAt) {
+    public Checklist(String name, String user_id, LocalDate createdAt, LocalTime updatedAt) {
         this.name = name;
         this.user_id = user_id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public void update(String name, Long user_id, LocalTime updatedAt) {
+    public void update(String name, String user_id, LocalTime updatedAt) {
         this.name = name;
         this.user_id = user_id;
         this.updatedAt = updatedAt;

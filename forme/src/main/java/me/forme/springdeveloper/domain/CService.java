@@ -25,7 +25,7 @@ public class CService {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private Long user_id;
+    private String user_id;
 
     @Column(name = "title")
     private String title;
@@ -44,7 +44,7 @@ public class CService {
     private LocalTime updatedAt;
 
     @Builder
-    public CService(long user_id, String title, String content, LocalDate createdAt, LocalTime updatedAt) {
+    public CService(String user_id, String title, String content, LocalDate createdAt, LocalTime updatedAt) {
         this.user_id = user_id;
         this.title = title;
         this.content = content;

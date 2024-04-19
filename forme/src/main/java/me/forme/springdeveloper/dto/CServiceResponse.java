@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class CServiceResponse {
     private final String title;
     private final String content;
-    private final Long user_id;
+    private final String user_id;
 
     public CServiceResponse(CService service) {
         this.title = service.getTitle();

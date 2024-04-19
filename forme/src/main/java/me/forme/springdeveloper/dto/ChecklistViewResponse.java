@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @Getter
 public class ChecklistViewResponse {
     private String name;
-    private Long user_id;
+    private String user_id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class UpdateChecklistRequest {
     private String name;
-    private long user_id;
+    private String user_id;
     @DateTimeFormat(pattern = "HH:mm")
     private LocalDateTime updateAt;
 }
