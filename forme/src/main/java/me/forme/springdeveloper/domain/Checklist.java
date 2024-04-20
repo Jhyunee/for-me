@@ -21,7 +21,7 @@ public class Checklist {
     //체크리스트 아이디
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", updatable = false)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -37,6 +37,9 @@ public class Checklist {
     @CreatedDate
     @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @Column(name = "deleted_at") //통계 기능 위해 삭제된 날짜 칼럼 추가
+    private LocalDate deletedAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
@@ -59,6 +62,10 @@ public class Checklist {
         this.name = name;
         this.user_id = user_id;
         this.updatedAt = updatedAt;
+    }
+
+    public void delete(LocalDate deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public void check() {

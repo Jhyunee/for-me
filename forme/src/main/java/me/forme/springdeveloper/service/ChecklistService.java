@@ -1,9 +1,11 @@
 package me.forme.springdeveloper.service;
-
+// 유저별, 삭제기간 별
 import jakarta.transaction.Transactional;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.repository.ChecklistRepository;
 import org.springframework.stereotype.Service;
@@ -19,17 +21,11 @@ public class ChecklistService {
 
     private final ChecklistRepository checklistRepository;
 
-    public List<Checklist> findAll() {
-        return checklistRepository.findAll();
+    //체크리스트 조회 메서드
+    public List<Checklist> findByDate(ShowChecklistRequest request) {
+        return checklistRepository.findByUserAndDeleteDate2(request.getUser_id(), request.getSelect_date());
     }
 
-    //체크리스트 조회 메서드
-//    public List<Checklist> index() {
-//        return checklistRepository.findAll();
-//    }
-    public List<Checklist> findByDate(LocalDate dateTime) {
-        return checklistRepository.findByCreatedAt(dateTime);
-    }
 
     //체크리스트 추가 메서드
     public Checklist save(AddChecklistRequest request) {
@@ -66,8 +62,9 @@ public class ChecklistService {
         if (target == null) {
             return null;
         }
-        // 3. 대상 삭제하기
-        checklistRepository.delete(target);
+        // 3. 대상 삭제하기 (실제 테이블에서 삭제X, 삭제 날짜 설정)
+        //checklistRepository.delete(target);
+        target.delete(LocalDate.now());
         return target;
     }
 }

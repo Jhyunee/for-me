@@ -3,9 +3,11 @@ package me.forme.springdeveloper.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Checklist;
+import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -20,6 +22,12 @@ public class HomeApiController {
 
     private LocalDate dateTime = LocalDate.now();
 
+    @GetMapping("/api/home")
+    public List<Checklist> index(@RequestBody ShowChecklistRequest request){
+        return checklistService.findByDate(request);
+    }
+
+    /*
     //체크리스트 조회 (오늘)
     @GetMapping("/api/home")
     public List<Checklist> index(){
@@ -47,4 +55,6 @@ public class HomeApiController {
     public List<Checklist> date(@PathVariable LocalDate date) {
         return checklistService.findByDate(date);
     }
+
+     */
 }

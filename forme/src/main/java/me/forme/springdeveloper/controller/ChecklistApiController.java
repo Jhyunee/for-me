@@ -2,10 +2,9 @@ package me.forme.springdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.forme.springdeveloper.domain.CService;
 import me.forme.springdeveloper.domain.Checklist;
-import me.forme.springdeveloper.dto.AddCServiceRequest;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,17 +24,19 @@ public class ChecklistApiController {
 
     private final ChecklistService checklistService;
 
-    //체크리스트 조회
+    //private LocalDate dateTime = LocalDate.now();
+
+    //체크리스트 조회 (선택한 날짜)
     @GetMapping("/api/checklists")
-    public List<Checklist> index() {
-        return checklistService.findAll();
+    public List<Checklist> index(@RequestBody ShowChecklistRequest request){
+        return checklistService.findByDate(request);
     }
 
-    //체크리스트 등록
+
+    //체크리스트 생성
     @PostMapping("/api/checklists")
     public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) {
         Checklist savedChecklist = checklistService.save(request);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedChecklist);
     }
