@@ -8,13 +8,13 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/formedb
+    url: jdbc:mysql://localhost:3306/formedb?createDatabaseIfNotExist=true
     username: root
-    password: 1111
+    password: 1212
