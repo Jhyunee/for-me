@@ -1,21 +1,21 @@
 package me.forme.springdeveloper.controller;
 
+import me.forme.springdeveloper.dto.AddChecklistRequest;
 import me.forme.springdeveloper.service.FlaskClientService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.RequiredArgsConstructor;
+
+
 @RestController
+@RequiredArgsConstructor
 public class TestController {
 
     private final FlaskClientService flaskClientService;
 
-    @Autowired
-    public TestController(FlaskClientService flaskClientService) {
-        this.flaskClientService = flaskClientService;
-    }
-
+    /* Flask로부터 데이터 받기 */
     @GetMapping("/flasktest")
     public Mono<String> getFlaskText() {
         return flaskClientService.getTextFromFlaskServer()
@@ -24,4 +24,16 @@ public class TestController {
                     return Mono.just("Received text from Flask server: " + flaskText);
                 });
     }
+
+
+    /* Flask로 데이터 전송 */
+    @PostMapping("/category")
+    @ResponseBody
+    public String sendToFlask(@RequestBody AddChecklistRequest addChecklistRequest) throws JsonProcessingException {
+
+
+
+        return flaskClientService.sendToFlask(addChecklistRequest);
+    }
+
 }
