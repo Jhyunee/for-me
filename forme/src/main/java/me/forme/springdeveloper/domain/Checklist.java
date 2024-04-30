@@ -2,10 +2,7 @@ package me.forme.springdeveloper.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -27,6 +24,7 @@ public class Checklist {
     @Column(name = "name", nullable = false)
     private String name;
 
+    // @Setter
     @Column(name = "category")
     private String category;
 
@@ -49,13 +47,13 @@ public class Checklist {
     @Column(name = "done")
     private int done; //0: False, 1: True
 
-
     @Builder
-    public Checklist(String name, String user_id, LocalDate createdAt, LocalTime updatedAt) {
+    public Checklist(String name, String user_id, LocalDate createdAt, LocalTime updatedAt, String category) {
         this.name = name;
         this.user_id = user_id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.category = category;
     }
 
     public void update(String name, String user_id, LocalTime updatedAt) {

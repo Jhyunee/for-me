@@ -1,14 +1,14 @@
 package me.forme.springdeveloper.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import me.forme.springdeveloper.domain.Checklist;
 import org.springframework.format.annotation.DateTimeFormat;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor
@@ -21,6 +21,8 @@ public class AddChecklistRequest {
     private LocalDate createdAt;
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime updatedAt;
+    @Setter
+    private String category;  // 카테고리 추가
 
         public Checklist toEntity() {
         return Checklist.builder()
@@ -28,6 +30,8 @@ public class AddChecklistRequest {
                 .user_id(user_id)
                 .createdAt(LocalDate.now())
                 .updatedAt(LocalTime.now())
+                .category(category)
                 .build();
     }
+
 }

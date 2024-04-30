@@ -1,9 +1,6 @@
 package me.forme.springdeveloper.service;
 
-import lombok.RequiredArgsConstructor;
-import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
-import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -27,41 +24,45 @@ public class FlaskClientService {
 
     private final ChecklistRepository checklistRepository;
 
+    private final ChecklistService checklistService;
 
-    public FlaskClientService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper, ChecklistRepository checklistRepository) {
+    private String response;
+
+    public FlaskClientService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper, ChecklistRepository checklistRepository, ChecklistService checklistService) {
         this.webClient = webClientBuilder.baseUrl("http://localhost:5000").build();
         this.objectMapper = objectMapper;
         this.checklistRepository = checklistRepository;
+        this.checklistService = checklistService;
     }
 
     /* flask -> spring */
     public Mono<String> getTextFromFlaskServer() {
         return webClient.get()
-                .uri("/test")
+                .uri("/send")
                 .retrieve()
                 .bodyToMono(String.class);
     }
 
     /* spring -> flask */
-        @Transactional
-        public String sendToFlask(AddChecklistRequest addChecklistRequest) throws JsonProcessingException {
-            RestTemplate restTemplate = new RestTemplate();
+    @Transactional // 원래 return String
+    public String sendToFlask(AddChecklistRequest addChecklistRequest) throws JsonProcessingException {
+        RestTemplate restTemplate = new RestTemplate();
 
-            //헤더를 JSON으로 설정함
-            HttpHeaders headers = new HttpHeaders();
+        // 헤더 JSON으로 설정
+        HttpHeaders headers = new HttpHeaders();
 
-            //파라미터로 들어온 dto를 JSON 객체로 변환
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        Long id = addChecklistRequest.toEntity().getId();
+        // 파라미터로 들어온 addChecklistRequest -> JSON 객체로 변환
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            String data = addChecklistRequest.getName();
-            String jsonData = objectMapper.writeValueAsString(data);
+        String data = addChecklistRequest.getName();
+        String jsonData = objectMapper.writeValueAsString(data);
+        HttpEntity<String> entity = new HttpEntity<String>(jsonData , headers);
 
-            HttpEntity<String> entity = new HttpEntity<String>(jsonData , headers);
+        // Flask 서버 URL
+        String url = "http://localhost:5000/predict";
+        response = restTemplate.postForObject(url, entity, String.class);
 
-            //실제 Flask 서버랑 연결하기 위한 URL
-            String url = "http://localhost:5000/predict";
-
-            //Flask 서버로 데이터를 전송하고 받은 응답 값을 return
-            return restTemplate.postForObject(url, entity, String.class);
-        }
+        return response;
+    }
 }
