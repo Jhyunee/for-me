@@ -1,17 +1,16 @@
 package me.forme.springdeveloper.service;
 // 유저별, 삭제기간 별
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
 import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
+
 import me.forme.springdeveloper.repository.ChecklistRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 

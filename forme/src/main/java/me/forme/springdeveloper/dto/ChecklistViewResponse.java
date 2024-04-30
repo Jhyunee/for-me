@@ -19,11 +19,13 @@ public class ChecklistViewResponse {
     private LocalDate createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private LocalTime updatedAt;
+    private String categoty;
 
     public ChecklistViewResponse(Checklist checklist) {
         this.name = checklist.getName();
         this.user_id = checklist.getUser_id();
         this.createdAt = checklist.getCreatedAt();
         this.updatedAt = checklist.getUpdatedAt();
+        // this.category = checklist.getCategory();
     }
 }
