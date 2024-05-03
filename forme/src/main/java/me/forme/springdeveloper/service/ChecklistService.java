@@ -28,6 +28,7 @@ public class ChecklistService {
 
     //체크리스트 추가 메서드
     public Checklist save(AddChecklistRequest request) {
+
         return checklistRepository.save(request.toEntity());
     }
 
@@ -36,7 +37,7 @@ public class ChecklistService {
     public Checklist update(Long id, UpdateChecklistRequest request) {
         Checklist checklist = checklistRepository.findById(id).orElse(null);
         if(checklist != null) {
-            checklist.update(request.getName(), request.getUser_id(), LocalTime.now());
+            checklist.update(request.getName(), request.getUser_id(), LocalTime.now(), request.getCategory());
             checklistRepository.save(checklist);
         }
         return checklist;
