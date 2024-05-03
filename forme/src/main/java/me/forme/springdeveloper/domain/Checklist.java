@@ -56,10 +56,11 @@ public class Checklist {
         this.category = category;
     }
 
-    public void update(String name, String user_id, LocalTime updatedAt) {
+    public void update(String name, String user_id, LocalTime updatedAt, String category) {
         this.name = name;
         this.user_id = user_id;
         this.updatedAt = updatedAt;
+        this.category = category;
     }
 
     public void delete(LocalDate deletedAt) {

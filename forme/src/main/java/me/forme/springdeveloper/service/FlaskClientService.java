@@ -1,6 +1,7 @@
 package me.forme.springdeveloper.service;
 
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -45,7 +46,7 @@ public class FlaskClientService {
 
     /* spring -> flask */
     @Transactional // 원래 return String
-    public String sendToFlask(AddChecklistRequest addChecklistRequest) throws JsonProcessingException {
+    public String sendToFlaskAdd(AddChecklistRequest addChecklistRequest) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 헤더 JSON으로 설정
@@ -56,6 +57,24 @@ public class FlaskClientService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String data = addChecklistRequest.getName();
+        String jsonData = objectMapper.writeValueAsString(data);
+        HttpEntity<String> entity = new HttpEntity<String>(jsonData , headers);
+
+        // Flask 서버 URL
+        String url = "http://localhost:5000/predict";
+        response = restTemplate.postForObject(url, entity, String.class);
+
+        return response;
+    }
+
+    @Transactional // 원래 return String
+    public String sendToFlaskUpdate(UpdateChecklistRequest updateChecklistRequest) throws JsonProcessingException {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String data = updateChecklistRequest.getName();
         String jsonData = objectMapper.writeValueAsString(data);
         HttpEntity<String> entity = new HttpEntity<String>(jsonData , headers);
 

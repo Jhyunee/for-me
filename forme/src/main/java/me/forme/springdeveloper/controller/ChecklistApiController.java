@@ -38,7 +38,7 @@ public class ChecklistApiController {
     public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) throws JsonProcessingException {
 
         // Flask 모델에 checklist 데이터 전송
-        flaskClientService.sendToFlask(request);
+        flaskClientService.sendToFlaskAdd(request);
         // Springboot로 category 예측 결과 가져오기
         String category = flaskClientService.getTextFromFlaskServer().block(); // 비동기 작업 완료를 기다림
 
@@ -52,7 +52,12 @@ public class ChecklistApiController {
     //체크리스트 수정
     @PatchMapping("/api/checklists/{id}")
     public ResponseEntity<Checklist> update(@PathVariable Long id,
-                                            @RequestBody UpdateChecklistRequest dto) {
+                                            @RequestBody UpdateChecklistRequest dto) throws JsonProcessingException {
+
+        flaskClientService.sendToFlaskUpdate(dto);
+        String category = flaskClientService.getTextFromFlaskServer().block();
+        dto.setCategory(category);
+
         Checklist updated = checklistService.update(id, dto);
         return (updated != null) ?
                 ResponseEntity.status(HttpStatus.OK).body(updated) :
