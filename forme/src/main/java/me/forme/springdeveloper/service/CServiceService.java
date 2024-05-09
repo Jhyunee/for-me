@@ -20,8 +20,8 @@ public class CServiceService {
     private final CServiceRepository cServiceRepository;
 
     // 고객센터 글 등록 메서드
-    public CService save(AddCServiceRequest request) {
-        return cServiceRepository.save(request.toEntity());
+    public CService save(AddCServiceRequest request, String userId) {
+        return cServiceRepository.save(request.toEntity(userId));
     }
 
     // 고객센터 글 목록 조회 메서드

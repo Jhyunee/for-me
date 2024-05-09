@@ -1,19 +1,24 @@
 package me.forme.springdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.CService;
+import me.forme.springdeveloper.domain.User;
 import me.forme.springdeveloper.dto.AddCServiceRequest;
 import me.forme.springdeveloper.dto.CServiceResponse;
 import me.forme.springdeveloper.dto.UpdateCServiceRequest;
 import me.forme.springdeveloper.service.CServiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class CServiceApiController {
 
     private final CServiceService cServiceService;
@@ -35,8 +40,9 @@ public class CServiceApiController {
 
     // 고객센터 글 등록
     @PostMapping("/api/mypage/services")
-    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request) {
-        CService savedService = cServiceService.save(request);
+    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request, Principal principal) {
+        log.info(principal.getName());
+        CService savedService = cServiceService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedService);

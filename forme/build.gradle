@@ -21,6 +21,17 @@ dependencies {
    implementation 'org.springframework.boot:spring-boot-starter-webflux'
    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 
+   implementation 'org.springframework.boot:spring-boot-starter-security'
+   implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+   testImplementation 'org.springframework.security:spring-security-test'
+
+   testAnnotationProcessor 'org.projectlombok:lombok'
+   testImplementation 'org.projectlombok:lombok'
+   implementation 'io.jsonwebtoken:jjwt:0.9.1' // 자바 JWT 라이브러리
+   implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 JAVA 객체 간 매핑 자동화
+
+   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
    //runtimeOnly 'com.h2database:h2'
    runtimeOnly 'com.mysql:mysql-connector-j'
    compileOnly 'org.projectlombok:lombok'

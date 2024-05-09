@@ -1,33 +1,70 @@
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Button, Alert, StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
-    const [id, setId] = useState('');
+    const [userId, setId] = useState('');
     const [password, setPassword] = useState('');
+    const [token, setToken] = useState('');
+
+    const handleLogin = async () => {
+        try {
+          const response = await fetch('http://10.0.2.2:8080/login', {
+            method: 'POST',
+            headers: {
+                Accept : 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                userId : userId,
+                password : password,
+            }),
+          });
+          if (response.ok) {
+            // 로그인 성공
+            // 액세스 토큰 저장
+            const getAccessToken = response.headers.get("Authorization").replace('Bearer ', '');
+            await AsyncStorage.setItem('accessToken', getAccessToken);
+            // 리프레서 토큰
+            const getRefreshToken = response.headers.get("Refresh-Token");
+            await AsyncStorage.setItem('refreshToken', getRefreshToken);
+            Alert.alert('Success', 'Logged in successfully!');
+            navigation.navigate('Main');
+          } else {
+            // 로그인 실패
+            Alert.alert('Error', 'Failed to log in. Please check your credentials.');
+          }
+        } catch (error) {
+          console.error('Error logging in:', error);
+          Alert.alert('Error', 'Failed to log in. Please try again later.');
+        }
+      };
+
   return (
     <View style={styles.container}>
         <View style={styles.inputContainer}>
             <TextInput 
                 placeholder="아이디"
-                value={id}
                 onChangeText={text => setId(text)}
+                value={userId}
                 style={styles.input} 
             />
             <TextInput 
                 placeholder="비밀번호"
-                value={password}
                 onChangeText={text => setPassword(text)}
+                value={password}
                 style={styles.input} 
             />
-        </View>
-        <View style={styles.buttonContainer}>
             <View style={styles.loginContainer}>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>로그인</Text>
+                    <Text style={styles.buttonText} onPress={handleLogin}>로그인</Text>
                 </TouchableOpacity>
             </View>
+        </View>
+        <View style={styles.buttonContainer}>
+        
             <View style={styles.linkContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('Main')}>
                     <Text style={[styles.linkText, styles.grayText]}>비밀번호 찾기</Text>
