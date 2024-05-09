@@ -7,7 +7,6 @@ import me.forme.springdeveloper.domain.CService;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor
@@ -22,9 +21,9 @@ public class AddCServiceRequest {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime updatedAt;
 
-    public CService toEntity() {
+    public CService toEntity(String userId) {
         return CService.builder()
-                .user_id(user_id)
+                .user_id(userId)
                 .title(title)
                 .content(content)
                 .createdAt(LocalDate.now())
