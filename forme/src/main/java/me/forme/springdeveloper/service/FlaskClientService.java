@@ -51,8 +51,6 @@ public class FlaskClientService {
 
         // 헤더 JSON으로 설정
         HttpHeaders headers = new HttpHeaders();
-
-        Long id = addChecklistRequest.toEntity().getId();
         // 파라미터로 들어온 addChecklistRequest -> JSON 객체로 변환
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -78,7 +76,6 @@ public class FlaskClientService {
         String jsonData = objectMapper.writeValueAsString(data);
         HttpEntity<String> entity = new HttpEntity<String>(jsonData , headers);
 
-        // Flask 서버 URL
         String url = "http://localhost:5000/predict";
         response = restTemplate.postForObject(url, entity, String.class);
 

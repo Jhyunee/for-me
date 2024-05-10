@@ -1,11 +1,18 @@
+<<<<<<< Updated upstream
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TouchableOpacity, TextInput, Alert, Button, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
+=======
+import { Button, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
+import axios from 'axios'
+import React from 'react'
+>>>>>>> Stashed changes
 import { useNavigation } from '@react-navigation/native';
 
 const MainScreen = () => {
     const navigation = useNavigation()
 
+<<<<<<< Updated upstream
     // const [hello, setData] = useState("");
     const [data, setData] = useState([]);
     const [title, setTitle] = useState('');
@@ -105,6 +112,30 @@ const MainScreen = () => {
     //     getDatas();
     // }, []);
 
+=======
+    const axiosInstance = axios.create({
+        //baseURL: 'http://192.168.0.6:8080', // 백엔드 서버 URL
+        timeout: 5000 // 요청 타임아웃 설정 (옵션)
+    })
+
+    useEffect(() => {
+        // 백엔드에서 데이터를 가져오는 함수
+        const fetchChecklists = async () => {
+            try {
+                console.log('Sending Axios request to /api/checklists');
+                const response = await axios.get('http://192.168.0.6/api/hello');
+                console.log(response);
+                // 서버에서 받은 데이터를 상태로 업데이트
+            } catch (error) {
+                // 요청 실패 시 에러 처리
+                console.error('Error fetching checklists:', error);
+            }
+        };
+
+        // 컴포넌트가 마운트되면 데이터를 가져옴
+        fetchChecklists();
+    }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
+>>>>>>> Stashed changes
 
 
   return (
@@ -114,6 +145,7 @@ const MainScreen = () => {
         <Button title="로그인 화면" onPress={() => navigation.navigate('Home')} />
         <View style={styles.separator} />
         <View style={styles.listView}>
+<<<<<<< Updated upstream
             <Text style={styles.listTitle}>글쓰고 아이디 저장까지 테스트</Text>
             <View style={{padding: 20}}>
                 <TextInput
@@ -132,6 +164,10 @@ const MainScreen = () => {
                     <Text style={styles.buttonText}>테스트</Text>
                 </TouchableOpacity>
             </View>
+=======
+            <Text style={styles.listTitle}>매일 신청 체크리스트</Text>
+            <Text style={styles.listTitle}>{response}</Text>
+>>>>>>> Stashed changes
         </View>
         <View style={styles.listView}>
             <Text style={styles.listTitle}>으아앙</Text>
