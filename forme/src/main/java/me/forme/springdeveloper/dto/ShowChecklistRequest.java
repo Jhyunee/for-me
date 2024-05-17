@@ -16,5 +16,4 @@ public class ShowChecklistRequest {
     private String user_id;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate select_date;
-    private String category;
 }

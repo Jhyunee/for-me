@@ -44,9 +44,6 @@ public class Checklist {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime updatedAt;
 
-    @Column(name = "done")
-    private int done; //0: False, 1: True
-
     @Builder
     public Checklist(String name, String user_id, LocalDate createdAt, LocalTime updatedAt, String category) {
         this.name = name;
@@ -66,12 +63,4 @@ public class Checklist {
     public void delete(LocalDate deletedAt) {
         this.deletedAt = deletedAt;
     }
-
-    public void check() {
-        if (this.done == 0){
-            this.done = 1;
-        }
-        else this.done = 0;
-    }
-
 }

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Checklist;
+import me.forme.springdeveloper.domain.Done;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
+import me.forme.springdeveloper.dto.AddDoneRequest;
 import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @CrossOrigin
@@ -30,8 +33,8 @@ public class ChecklistApiController {
 
     //체크리스트 조회 (선택한 날짜)
     @GetMapping("/api/checklists")
-    public List<Checklist> index(@RequestBody ShowChecklistRequest request) {
-        return checklistService.findByDate(request);
+    public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request) {
+        return checklistService.getChecklistsByDate(request);
     }
 
     //체크리스트 생성
@@ -76,9 +79,9 @@ public class ChecklistApiController {
 
     //체크리스트 완료
     @PatchMapping("/api/checklists/check/{id}")
-    public ResponseEntity<Checklist> check(@PathVariable Long id) {
-        Checklist checked = checklistService.check(id);
-        return (checked != null) ?
+    public ResponseEntity<Checklist> done(@PathVariable Long id, @RequestBody AddDoneRequest request) {
+        Done done = checklistService.done(request);
+        return (done != null) ?
                 ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }

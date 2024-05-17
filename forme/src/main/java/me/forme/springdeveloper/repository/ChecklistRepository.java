@@ -15,11 +15,12 @@ import java.util.Optional;
 
 public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
 
+    //userid 이용. 특정 날짜에 유효한 체크리스트 넘겨주기
     @Query("SELECT c " +
             "FROM Checklist c " +
             "WHERE c.user_id = :user_id " +
             "AND c.createdAt <= :select_date AND (c.deletedAt IS NULL OR c.deletedAt > :select_date)")
-    List<Checklist> findByUserAndDeleteDate2(@Param("user_id") String user_id, @Param("select_date") LocalDate dateTime);
+    List<Checklist> findByUserAndDate(@Param("user_id") String user_id, @Param("select_date") LocalDate dateTime);
 
 
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,8 +24,8 @@ public class HomeApiController {
     private LocalDate dateTime = LocalDate.now();
 
     @GetMapping("/api/home")
-    public List<Checklist> index(@RequestBody ShowChecklistRequest request){
-        return checklistService.findByDate(request);
+    public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request){
+        return checklistService.getChecklistsByDate(request);
     }
 
     /*
