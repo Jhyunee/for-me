@@ -21,8 +21,7 @@ import java.util.List;
 @RestController
 @Slf4j
 public class NoticeApiController {
-    @Autowired
-    private NoticeService noticeService;
+    private final NoticeService noticeService;
 
     // 모든 공지글 조회
     @GetMapping("/api/mypage/notices")

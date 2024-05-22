@@ -11,8 +11,8 @@ public class NoticeResponse {
     private final String admin_id;
 
     public NoticeResponse(Notice notice) {
-        this.admin_id = getAdmin_id();
-        this.title = getTitle();
-        this.content = getContent();
+        this.admin_id = notice.getAdmin_id();
+        this.title = notice.getTitle();
+        this.content = notice.getContent();
     }
 }

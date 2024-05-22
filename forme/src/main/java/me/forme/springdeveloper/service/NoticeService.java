@@ -14,8 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class NoticeService {
-    @Autowired
-    private NoticeRepository noticeRepository;
+    private final NoticeRepository noticeRepository;
 
     public List<Notice> findAll() {return noticeRepository.findAll();}
 
