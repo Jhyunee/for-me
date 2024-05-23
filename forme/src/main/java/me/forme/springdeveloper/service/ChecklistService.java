@@ -103,4 +103,13 @@ public class ChecklistService {
         target.delete(LocalDate.now());
         return target;
     }
+
+    public Long findByMaxId(){
+        return checklistRepository.findByMaxId();
+    }
+
+    public Checklist findById(Long id) {
+        return checklistRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : "+ id));
+    }
 }

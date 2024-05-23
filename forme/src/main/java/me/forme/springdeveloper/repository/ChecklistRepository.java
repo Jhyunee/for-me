@@ -22,6 +22,7 @@ public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
             "AND c.createdAt <= :select_date AND (c.deletedAt IS NULL OR c.deletedAt > :select_date)")
     List<Checklist> findByUserAndDate(@Param("user_id") String user_id, @Param("select_date") LocalDate dateTime);
 
-
+    @Query("SELECT MAX(c.id) FROM Checklist c")
+    Long findByMaxId();
 
 }
