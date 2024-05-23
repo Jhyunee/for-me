@@ -7,6 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -59,6 +61,12 @@ public class User implements UserDetails { //UserDetails를 상속받아 인증 
         this.phone = phone;
         this.birth = birth;
         this.created_at = created_at;
+    }
+
+    public void update(String email, String name, String phone) {
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
     }
 
     @Override // 권한 반환
