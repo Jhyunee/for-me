@@ -12,7 +12,8 @@ import AskQuestionScreen from './screens/AskQuestionScreen';
 import MyPageScreen from './screens/MyPage';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import EditProfile from './screens/EditProfileScreen';
-import NoticeScreen from './screens/NoticeScreen'
+import NoticeScreen from './screens/NoticeScreen';
+import SignUpScreen from './screens/SignUpScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen options={{ headerShown: false }} name="EditProfile" component={EditProfile} />
         <Stack.Screen options={{ headerShown: false }} name="Notice" component={NoticeScreen} />
+        <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

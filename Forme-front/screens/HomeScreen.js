@@ -18,13 +18,13 @@ const HomeScreen = () => {
                 </Svg>
                 <Text style={[styles.buttonText, {marginLeft: 40}]}>카카오로 계속하기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('MyPage')}>
+            <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('SignUp')}>
                 <Text style={styles.buttonText}>회원가입</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.buttonText}>로그인</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+            <TouchableOpacity onPress={() => navigation.navigate('MyPage')}>
                 <Text style={styles.MainButtonText}>고객센터</Text>
             </TouchableOpacity>
         </View>
