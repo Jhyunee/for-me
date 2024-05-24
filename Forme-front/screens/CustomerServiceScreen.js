@@ -63,6 +63,12 @@ const CustomerServiceScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <View style={styles.customerServiceTextContainer}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text>{'<'}</Text>
+          </TouchableOpacity>
+          <Text style={styles.customerServiceText}>고객센터</Text>
+      </View>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -256,6 +262,22 @@ const styles = StyleSheet.create({
   },
   bottomIcon: {
     marginLeft: 'auto',
+  },
+  customerServiceTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  customerServiceText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    textDecorationLine: 'underline',
+    flex: 1,
+    textAlign:'center',
+  },
+  backButton: {
+    marginRight: 10,
   },
 });
 

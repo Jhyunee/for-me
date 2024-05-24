@@ -18,7 +18,7 @@ const HomeScreen = () => {
                 </Svg>
                 <Text style={[styles.buttonText, {marginLeft: 40}]}>카카오로 계속하기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('MyPage')}>
                 <Text style={styles.buttonText}>회원가입</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
