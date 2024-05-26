@@ -38,7 +38,7 @@ public class WebJwtSecurityConfig {
                 // 헤더를 확인할 커스텀 필터 추가
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login").permitAll()  // 로그인 엔드포인트는 누구나 접근 가능하도록 설정
+                        .requestMatchers("/login", "/user").permitAll()  // 로그인 엔드포인트는 누구나 접근 가능하도록 설정
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
 
