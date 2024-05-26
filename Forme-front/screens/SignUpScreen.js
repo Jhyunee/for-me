@@ -1,22 +1,50 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import axios from 'axios';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phone, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [gender, setGender] = useState('여자');
-  const genders = ['남자', '여자']; // 성별 선택지
+  const [birth, setBirthdate] = useState('');
+  const [gender, setGender] = useState('f');
+  const genders = ['m', 'f'];
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [userId ,setUserId] = useState('');
 
-  const Submit = () => {
-    // 회원 정보 수정 호출
-    console.log('회원정보 수정완료');
+  const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      console.log('Sending request with:', { userId, name, phone, email, birth, gender, password });
+
+      const response = await axios.post('http://172.30.1.36:8080/user', {
+        userId : userId,
+        password: password,
+        email:email,
+        name:name,
+        phone:phone,
+        birth:birth,
+        gender:gender,
+      });
+
+      //console.log('Received response:', response);
+
+      if (response.status === 201) {
+        console.log("로그인 성공");
+        navigation.navigate('Login');
+      } else {
+        console.log("에러발생")
+      }
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
   };
 
   return (
@@ -34,7 +62,7 @@ const SignUpScreen = () => {
             onChangeText={setUserId}
             value={userId}
           />
-          <TouchableOpacity style={styles.checkButton} onPress={Submit}>
+          <TouchableOpacity style={styles.checkButton} >
         <Text style={styles.buttonText}>중복 확인</Text>
       </TouchableOpacity>
         </View>
@@ -78,10 +106,10 @@ const SignUpScreen = () => {
           <Text style={styles.icon}>📞</Text>
           <TextInput
             style={styles.input}
-            placeholder="연락처"
+            placeholder="연락처 : 010-1234-5678 형태"
             placeholderTextColor="#808080"
             onChangeText={setPhoneNumber}
-            value={phoneNumber}
+            value={phone}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -98,10 +126,10 @@ const SignUpScreen = () => {
           <Text style={styles.icon}>🎂</Text>
           <TextInput
             style={styles.input}
-            placeholder="생년월일 8자리"
+            placeholder="생년월일 : 2000-06-29 형태"
             placeholderTextColor="#808080"
             onChangeText={setBirthdate}
-            value={birthdate}
+            value={birth}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -117,7 +145,7 @@ const SignUpScreen = () => {
           ))}
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={Submit}>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>회원 가입</Text>
       </TouchableOpacity>
 
