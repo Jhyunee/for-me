@@ -11,7 +11,7 @@ const LoginScreen = () => {
 
     const handleLogin = async () => {
         try {
-          const response = await fetch('http://10.0.2.2:8080/login', {
+          const response = await fetch('http://172.30.1.86:8080/login', {
             method: 'POST',
             headers: {
                 Accept : 'application/json',
@@ -58,9 +58,9 @@ const LoginScreen = () => {
                 style={styles.input} 
             />
             <View style={styles.loginContainer}>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText} onPress={handleLogin}>로그인</Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>로그인</Text>
+            </TouchableOpacity>
             </View>
         </View>
         <View style={styles.buttonContainer}>

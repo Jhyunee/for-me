@@ -15,10 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-    /*
-     *    토큰 인증 로그인에 사용하는 SecurityConfig
-     */
-
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -30,19 +26,24 @@ public class WebJwtSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf().disable()
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                // 로그인 시 /login 엔드포인트에서 jwtAuthenticationFilter가 동작하도록 설정
+                .addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 헤더를 확인할 커스텀 필터 추가
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .authorizeRequests().anyRequest().permitAll()
-                .build();
-    }
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login").permitAll()  // 로그인 엔드포인트는 누구나 접근 가능하도록 설정
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+                );
 
+        return http.build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -53,6 +54,7 @@ public class WebJwtSecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(tokenProvider, refreshTokenRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        filter.setFilterProcessesUrl("/login"); // 필터가 /login URL에서 동작하도록 설정
         return filter;
     }
 
