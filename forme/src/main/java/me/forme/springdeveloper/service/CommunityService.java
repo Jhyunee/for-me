@@ -27,7 +27,7 @@ public class CommunityService {
     // 다른 유저들의 체크리스트 랜덤 3개
     // 랜덤 숫자 3개로 체크리스트 아이디
     // 체크리스트 아이디 몇번까지 있는지.. 가져오기.. -> 어떻게?
-    public Map<Long, String> getRanChecklist (ShowChecklistRequest request) {
+    public Map<Long, String> getRanChecklist (ShowChecklistRequest request, String userId) {
         long [] array = new long[3];
         Long id = checklistService.findByMaxId();
         for(int i = 0; i < 3; i++) {

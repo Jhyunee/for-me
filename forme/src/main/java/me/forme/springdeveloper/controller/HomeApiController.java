@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
+import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,12 +21,14 @@ import java.util.Map;
 public class HomeApiController {
 
     private final ChecklistService checklistService;
+    private final GetUserIdFromTokenService getUserIdFromTokenService;
 
     private LocalDate dateTime = LocalDate.now();
 
     @GetMapping("/api/home")
     public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request){
-        return checklistService.getChecklistsByDate(request);
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
+        return checklistService.getChecklistsByDate(request, userId);
     }
 
     /*

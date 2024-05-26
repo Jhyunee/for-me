@@ -92,6 +92,8 @@ public class MypageApiController {
     }
 
 
+    @GetMapping
+
     // 회원정보 수정
     @PatchMapping("/api/mypage/auth/{id}")
     public ResponseEntity<User> reauth(@RequestBody UpdateUserRequest request, /*Principal principal*/ @PathVariable String id){

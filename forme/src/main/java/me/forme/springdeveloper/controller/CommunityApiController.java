@@ -7,6 +7,7 @@ import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.repository.RewardRepository;
 import me.forme.springdeveloper.service.ChecklistService;
 import me.forme.springdeveloper.service.CommunityService;
+import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import me.forme.springdeveloper.service.RewardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class CommunityApiController {
 
     private final CommunityService communityService;
+    private final GetUserIdFromTokenService getUserIdFromTokenService;
 
     LocalDate localDate = LocalDate.now();
 
@@ -34,34 +36,38 @@ public class CommunityApiController {
     // -> {id} 지우고 Principal principal, id에 principal.getName()
 
     // 커뮤니티 전체
-    @GetMapping("/community/{id}")
+    @GetMapping("/community")
     public Map<String, Map<?,?>> commWhole(ShowChecklistRequest checkRequest, /*Principal principal*/@PathVariable String id){
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
         Map<String, Map<?,?>> map = new HashMap<>();
-        map.put("checklist", communityService.getRanChecklist(checkRequest));
+        map.put("checklist", communityService.getRanChecklist(checkRequest, userId));
         // 다른 유저들과의 노력금 비교 (또래 | 같은성별)
-        map.put("reward", communityService.getSaving(id));
+        map.put("reward", communityService.getSaving(userId));
         // 다른 유저들과의 달성율 비교 (또래 | 같은성별)
 
         return map;
     }
 
     // 커뮤니티 전체 탭 월별 노력금
-    @GetMapping("/api/community/reward/{id}")
-    public Map<String, Long> reward(@PathVariable String id) {
+    @GetMapping("/api/community/reward")
+    public Map<String, Long> reward() {
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
         localDate = LocalDate.now();
-        return communityService.findByUserIdAndDate(id, localDate);
+        return communityService.findByUserIdAndDate(userId, localDate);
     }
 
-    @GetMapping("/api/community/reward/forward/{id}")
-    public Map<String, Long> forward(/*Principal principal*/@PathVariable String id) {
+    @GetMapping("/api/community/reward/forward")
+    public Map<String, Long> forward() {
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
         localDate = localDate.plusMonths(3);
-        return communityService.findByUserIdAndDate(id, localDate);
+        return communityService.findByUserIdAndDate(userId, localDate);
     }
 
-    @GetMapping("/api/community/reward/backward/{id}")
-    public Map<String, Long> backward(/*Principal principal*/@PathVariable String id) {
+    @GetMapping("/api/community/reward/backward")
+    public Map<String, Long> backward() {
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
         localDate = localDate.minusMonths(3);
-        return communityService.findByUserIdAndDate(id, localDate);
+        return communityService.findByUserIdAndDate(userId, localDate);
     }
 
     // 커뮤니티 친구

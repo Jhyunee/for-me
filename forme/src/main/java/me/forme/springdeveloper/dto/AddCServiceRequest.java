@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Getter
 public class AddCServiceRequest {
-    private String user_id;
+    //private String user_id;
     private String title;
     private String content;
     @DateTimeFormat(pattern = "yyyy-MM-dd")

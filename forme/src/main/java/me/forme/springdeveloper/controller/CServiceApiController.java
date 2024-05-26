@@ -8,6 +8,7 @@ import me.forme.springdeveloper.dto.AddCServiceRequest;
 import me.forme.springdeveloper.dto.CServiceResponse;
 import me.forme.springdeveloper.dto.UpdateCServiceRequest;
 import me.forme.springdeveloper.service.CServiceService;
+import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,8 @@ import java.util.List;
 public class CServiceApiController {
 
     private final CServiceService cServiceService;
+
+    private final GetUserIdFromTokenService getUserIdFromTokenService;
 
     // 고객센터 글 목록 조회
     @GetMapping("/api/mypage/services")
@@ -40,9 +43,10 @@ public class CServiceApiController {
 
     // 고객센터 글 등록
     @PostMapping("/api/mypage/services")
-    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request, Principal principal) {
-        log.info(principal.getName());
-        CService savedService = cServiceService.save(request, principal.getName());
+    public ResponseEntity<CService> addService(@RequestBody AddCServiceRequest request) {
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
+        //log.info(principal.getName());
+        CService savedService = cServiceService.save(request, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedService);

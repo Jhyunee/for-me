@@ -11,6 +11,7 @@ import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
 import me.forme.springdeveloper.service.FlaskClientService;
+import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,21 +27,24 @@ import java.util.Map;
 public class ChecklistApiController {
 
     private final ChecklistService checklistService;
-
+    private final GetUserIdFromTokenService getUserIdFromTokenService;
     private final FlaskClientService flaskClientService;
+
+
 
     //private LocalDate dateTime = LocalDate.now();
 
     //체크리스트 조회 (선택한 날짜)
     @GetMapping("/api/checklists")
     public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request) {
-        return checklistService.getChecklistsByDate(request);
+        String userId = getUserIdFromTokenService.getUserIdFromToken();
+        return checklistService.getChecklistsByDate(request, userId);
     }
 
-    //체크리스트 생성
+    //체크리스트 생성 (request dto에 user_id 전달 > token 전달로 수정 필요)
     @PostMapping("/api/checklists")
     public ResponseEntity<Checklist> addChecklist(@RequestBody AddChecklistRequest request) throws JsonProcessingException {
-
+        //String userId = getUserIdFromTokenService.getUserIdFromToken();
         // Flask 모델에 checklist 데이터 전송
         flaskClientService.sendToFlaskAdd(request);
         // Springboot로 category 예측 결과 가져오기
@@ -53,7 +57,7 @@ public class ChecklistApiController {
                 .body(savedChecklist);
     }
 
-    //체크리스트 수정
+    //체크리스트 수정 (request dto에 user_id 전달 > token 전달로 수정 필요)
     @PatchMapping("/api/checklists/{id}")
     public ResponseEntity<Checklist> update(@PathVariable Long id,
                                             @RequestBody UpdateChecklistRequest dto) throws JsonProcessingException {
@@ -71,6 +75,7 @@ public class ChecklistApiController {
     //체크리스트 삭제
     @DeleteMapping("/api/checklists/{id}")
     public ResponseEntity<Checklist> delete(@PathVariable Long id) {
+        // 각 체크리스트 공유의 id가 있기 때문에 user_id 불필요
         Checklist deleted = checklistService.delete(id);
         return (deleted != null) ?
                 ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
