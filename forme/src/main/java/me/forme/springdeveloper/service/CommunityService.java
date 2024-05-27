@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Reward;
 import me.forme.springdeveloper.dto.ShowChecklistRequest;
+import me.forme.springdeveloper.repository.CustomQueryRepository;
 import me.forme.springdeveloper.repository.RewardRepository;
 import me.forme.springdeveloper.repository.UserRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,17 +25,18 @@ public class CommunityService {
     private final ChecklistService checklistService;
     private final RewardRepository rewardRepository;
     private final UserRepository userRepository;
+    private final CustomQueryRepository customQueryRepository;
+
+    LocalDate localDate = LocalDate.now();
 
     // 다른 유저들의 체크리스트 랜덤 3개
-    // 랜덤 숫자 3개로 체크리스트 아이디
-    // 체크리스트 아이디 몇번까지 있는지.. 가져오기.. -> 어떻게?
     public Map<Long, String> getRanChecklist (ShowChecklistRequest request) {
         long [] array = new long[3];
         Long id = checklistService.findByMaxId();
         for(int i = 0; i < 3; i++) {
             array[i] = (long) (Math.random()*id+1);
             // 중복값 제거
-            for(int j = 0; i < i; j++) {
+            for(int j = 0; j < i; j++) {
                 if(array[i] == array[j]){
                     i--;
                     break;
@@ -52,22 +55,19 @@ public class CommunityService {
     // 그동안 모은 노력금(월별) -> reward의 월별 saving
     public Map<String, Long> findByUserIdAndDate(String userId, LocalDate localDate) {
         Map<String, Long> map = new HashMap<>();
-        String todayMonth = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM"));
-        log.info(todayMonth);
-        String lastMonth = localDate.minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy.MM"));
-        log.info(lastMonth);
-        String last2Month = localDate.minusMonths(2).format(DateTimeFormatter.ofPattern("yyyy.MM"));
-        log.info(last2Month);
+        LocalDate todayMonth = localDate;
+        LocalDate lastMonth = localDate.minusMonths(1);
+        LocalDate last2Month = localDate.minusMonths(2);
+
 
         if(rewardRepository.findByUserIdAndCreatedAt(userId, todayMonth).isPresent()) {
-            map.put(todayMonth, rewardRepository.findByUserIdAndCreatedAt(userId, todayMonth).get().getSaving());
-            log.info(todayMonth + rewardRepository.findByUserIdAndCreatedAt(userId, todayMonth).get().getSaving());
+            map.put(todayMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")), rewardRepository.findByUserIdAndCreatedAt(userId, todayMonth).get().getSaving());
         }
         if(rewardRepository.findByUserIdAndCreatedAt(userId, lastMonth).isPresent()) {
-            map.put(lastMonth, rewardRepository.findByUserIdAndCreatedAt(userId, lastMonth).get().getSaving());
+            map.put(lastMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")), rewardRepository.findByUserIdAndCreatedAt(userId, lastMonth).get().getSaving());
         }
         if(rewardRepository.findByUserIdAndCreatedAt(userId, last2Month).isPresent()) {
-            map.put(last2Month, rewardRepository.findByUserIdAndCreatedAt(userId, last2Month).get().getSaving());
+            map.put(last2Month.format(DateTimeFormatter.ofPattern("yyyy.MM")), rewardRepository.findByUserIdAndCreatedAt(userId, last2Month).get().getSaving());
         }
         return map;
     }
@@ -76,30 +76,71 @@ public class CommunityService {
     public Map<String, Long> getSaving(String userId) {
         Map<String, Long> map = new HashMap<>();
 
-        // 또래 -> user랑 reward join -> userId랑 같은 age, 이번달 createdAt, reward select -> reward리턴 이거AVG로 해도 될 듯..?
-        /*select avg(b.reward)
-         * from user a, reward b
-         * on a.userId = b.userId
-         * where created_at = 이번달
-         * like a.birth = "회원의 생일 년도%"
-         * 매개변수 param으로 이번달, 회원의 생일 년도
-         * */
-        String birth = userRepository.findByUserId(userId).get().getBirth().format(DateTimeFormatter.ofPattern("yyyy"));
-        String now = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM"));
-        Long ageReward = rewardRepository.findByAgeReward(now, birth);
-        map.put("age", ageReward);
+        // 또래
+        LocalDate birth = userRepository.findByUserId(userId).get().getBirth();
+        Long ageReward = rewardRepository.findByAgeReward(localDate, birth);
+        if(ageReward != null) {
+            map.put("age", ageReward);
+        }
+        else {
+            map.put("age", 0L);
+        }
 
-        // 같은 성별 user랑 reward join -> userId랑 같은 성별, 이번달 createdAt, reward select -> reward리턴 이거AVG로 해도 될 듯..?
+
+        // 같은 성별
         String gender = userRepository.findByUserId(userId).get().getGender();
-        Long genderReward = rewardRepository.findByGenderReward(now, gender);
-        map.put("gender", genderReward);
+        Long genderReward = rewardRepository.findByGenderReward(localDate, gender);
+        if(genderReward != null) {
+            map.put("gender", genderReward);
+        }
+        else {
+            map.put("gender", 0L);
+        }
 
         // 나의 노력금
-        Long myReward = rewardRepository.findByUserIdAndCreatedAt(userId, now).get().getReward();
-        map.put("myReward", myReward);
+        Long myReward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).get().getReward();
+        if(myReward != null) {
+            map.put("myReward", myReward);        }
+        else {
+            map.put("myReward", 0L);
+        }
 
         return map;
     }
 
     // 다른 유저들과의 달성율 비교 (또래 | 같은성별)
+    public Map<String, Double> getAchievement(String userId) {
+        Map<String, Double> map = new HashMap<>();
+        // 또래
+        LocalDate birth = userRepository.findByUserId(userId).get().getBirth();
+        try {
+            Double ageAchieve = customQueryRepository.findDailyAchieveByAge(birth, localDate) * 100;
+            map.put("age", ageAchieve);
+        }
+        catch (NullPointerException e){
+            map.put("age", 0.0);
+        }
+
+        // 같은 성별
+        String gender = userRepository.findByUserId(userId).get().getGender();
+        try {
+            Double genAchieve = customQueryRepository.findDailyAchieveByGender(gender, localDate) * 100;
+            map.put("gender", genAchieve);
+        }
+        catch (NullPointerException e){
+            map.put("gender", 0.0);
+        }
+
+        // 나의 달성율
+        try {
+            Double myAchieve = customQueryRepository.findDailyAchieveByUserId(userId, localDate) * 100;
+            map.put("myAchieve", myAchieve);
+        }
+        catch (NullPointerException e) {
+            map.put("myAchieve", 0.0);
+        }
+
+
+        return map;
+    }
 }

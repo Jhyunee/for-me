@@ -7,6 +7,7 @@ import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.domain.Reward;
 import me.forme.springdeveloper.domain.User;
 import me.forme.springdeveloper.dto.*;
+import me.forme.springdeveloper.service.MypageService;
 import me.forme.springdeveloper.service.RewardService;
 import me.forme.springdeveloper.service.UserService;
 import org.springframework.cglib.core.Local;
@@ -19,6 +20,9 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,40 +31,34 @@ public class MypageApiController {
 
     private final RewardService rewardService;
     private final UserService userService;
+    private final MypageService mypageService;
 
-    String getMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM"));
     LocalDate localDate = LocalDate.now();
 
-    // uri에서 {id}와 @PathVariable String id는 테스트용
+    // url에서 {id}와 @PathVariable String id는 테스트용
     // -> {id} 지우고 Principal principal, id에 principal.getName()
 
-    @GetMapping("/api/mypage/{id}")
-    public User getUser(/*Principal principal*/ @PathVariable String id) {
-        return userService.findById(id);
+    @GetMapping("/mypage/{id}")
+    public Map<String, Map<String, ?>> mypage(@PathVariable String id) {
+        Map<String, Map<String, ?>> map = new HashMap<>();
+        // 회원 정보 (이름, 아이디, 이메일)
+        map.put("userInfo", mypageService.getUserInfo(id));
+        // 이번달 쌓인 노력금
+        map.put("saved", mypageService.getSaved(id));
+        // 오늘의 달성율
+        map.put("achieve", mypageService.findByAchieveByUserId(id));
+        // 이번달 설정한 노력금
+        map.put("reward", mypageService.getMonthlyReward(id));
+        return map;
     }
 
 
-    // 오늘의 달성율
-    // 언니가 준대요
-    // 여기서 saving 계산?할 듯
-
-
-
-    // 노력금 조회 - 날짜&유저아이디로?
-    // 잠만.. 노력금 어떻게 해야되지 일별 노력금은 프론트에서 ??
-    @GetMapping("/api/mypage/money/{id}")
-    public Reward reward(/*Principal principal*/ @PathVariable String id){
-        return rewardService.findById(id, getMonth);
-    }
-
-
-    //노력금 자동 저장 -> home api에서 로그인할 때마다 if문 하는게 좋을까?
+    //노력금 저장 -> home api에서 로그인할 때마다 if문 하는게 좋을까?
     //프론트에서 main화면에서 그냥 이거 호출하면 댈거 같기도
     @PostMapping("/api/mypage/money/{id}") // db에 오늘 month에 해당하는 데이터가 없다면
     public ResponseEntity<Reward> save(AddRewardRequest request, /*Principal principal*/ @PathVariable String id) {
-        log.info(getMonth);
-        if(rewardService.findByDate(id, getMonth) == null){
-            Reward savedReward = rewardService.save(request, id, getMonth);
+        if(rewardService.findByDate(id, localDate) == null){
+            Reward savedReward = rewardService.save(request, id);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(savedReward);
@@ -81,7 +79,6 @@ public class MypageApiController {
     }
 
     // 비밀번호 변경
-    // userId는 test용 -> Principal principal로 변경 예정
     @PostMapping("/api/mypage/password/{id}")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request, /*Principal principal*/ @PathVariable String id) {
         boolean changed = userService.changePassword(id, request.getOldPassword(), request.getNewPassword());

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -22,10 +23,11 @@ public interface CustomQueryRepository extends JpaRepository<Checklist, Long> {
             "    WHERE T1.RNUM <= 365 " +
             "    ORDER BY 1 " +
             ") " +
-            "SELECT T1.WK ymd, " +
-            "       T1.USER_ID user_id, " +
-            "       SUM(T1.TOT_CNT) tot_cnt, " +
-            "       SUM(T1.DONE_CNT) done_cnt, " +
+            "SELECT " +
+                "       T1.WK ymd, " +
+                "       T1.USER_ID user_id, " +
+                "       SUM(T1.TOT_CNT) tot_cnt, " +
+                "       SUM(T1.DONE_CNT) done_cnt, " +
             "       SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT) rate " +
             "FROM ( " +
             "    SELECT T1.WK WK, " +
@@ -230,4 +232,204 @@ public interface CustomQueryRepository extends JpaRepository<Checklist, Long> {
             "GROUP BY T1.YY, T2.USER_ID, T4.CATEGORY " +
             "ORDER BY YY, CATEGORY_COUNT DESC", nativeQuery = true)
     List<Object[]> findYearlyCategoryStatsByUserId(@Param("userId") String userId);
+
+    // 오늘 달성율
+    @Query(value = "WITH CAL_INFO AS (" +
+            "    SELECT DATE_ADD('2024-01-01', INTERVAL (RNUM-1) DAY) AS BASIS_YMD, " +
+            "           WEEK(DATE_ADD('2024-01-01', INTERVAL (RNUM-1) DAY)) + 1 AS WK " +
+            "    FROM (SELECT ROW_NUMBER() OVER(ORDER BY  ordinal_position ) RNUM " +
+            "          FROM information_schema.columns) T1 " +
+            "    WHERE RNUM <= 365 " +
+            "    ORDER BY BASIS_YMD " +
+            ") " +
+            "SELECT " +
+//            "       T1.DATEID, " +
+//            "       T1.USER_ID, " +
+//            "       SUM(T1.TOT_CNT) AS TOT_CNT, " +
+//            "       SUM(T1.DONE_CNT) AS DONE_CNT, " +
+            "       SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT) AS RATE " +
+            "FROM ( " +
+            "    SELECT T1.BASIS_YMD AS DATEID, " +
+            "           T3.USER_ID, " +
+            "           COUNT(*) AS TOT_CNT, " +
+            "           NULL AS DONE_CNT " +
+            "    FROM CAL_INFO T1 " +
+            "    JOIN CHECKLIST T2 ON T1.BASIS_YMD >= T2.CREATED_AT " +
+            "                      AND (T1.BASIS_YMD <= T2.DELETED_AT OR T2.DELETED_AT IS NULL) " +
+            "    JOIN USERS T3 ON T2.USER_ID = T3.USER_ID " +
+            "    GROUP BY T1.BASIS_YMD, T3.USER_ID " +
+            "    UNION ALL " +
+            "    SELECT T1.DONE_DATE AS DATEID, " +
+            "           T2.USER_ID, " +
+            "           NULL AS TOT_CNT, " +
+            "           COUNT(*) AS DONE_CNT " +
+            "    FROM DONE T1 " +
+            "    JOIN USERS T2 ON T1.USER_ID = T2.USER_ID " +
+            "    GROUP BY T1.DONE_DATE, T2.USER_ID " +
+            ") T1 " +
+            "WHERE T1.USER_ID = :userId " +
+            "  AND T1.DATEID = :localDate " +
+            "GROUP BY DATEID, USER_ID", nativeQuery = true)
+    Double findDailyAchieveByUserId(@Param("userId") String userId, @Param("localDate") LocalDate localDate);
+
+    // 오늘 적립금
+    @Query(value = "WITH CAL_INFO AS " +
+            "( " +
+            "   SELECT '20240101' + INTERVAL RNUM-1 DAY  BASIS_YMD, " +
+            "            WEEK('20240101' + INTERVAL RNUM-1 DAY) + 1 WK, " +
+            "            MONTH('20240101' + INTERVAL RNUM-1 DAY) MM, " +
+            "            YEAR('20240101' + INTERVAL RNUM-1 DAY) YY " +
+            "   FROM    (   " +
+            "            SELECT ROW_NUMBER() OVER(ORDER BY  ordinal_position ) RNUM " +
+            "            FROM information_schema.columns " +
+            "         ) T1 " +
+            "   WHERE  T1.RNUM <= 365 " +
+            "   ORDER BY  1 " +
+            ") " +
+            "SELECT " +
+//            "       T1.DATEID, " +
+//            "       T1.USER_ID, " +
+//            "       SUM(T1.TOT_CNT) AS TOT_CNT, " +
+//            "       SUM(T1.DONE_CNT) AS DONE_CNT, " +
+//            "       SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT) AS RATE, " +
+            "       (SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT)) * (T2.REWARD / DAY(LAST_DAY('2022-07-20'))) AS DAILY_REWARD " +
+            "FROM ( " +
+            "   SELECT T1.BASIS_YMD AS DATEID, " +
+            "          T3.USER_ID AS USER_ID, " +
+            "          COUNT(*) AS TOT_CNT, " +
+            "          NULL AS DONE_CNT " +
+            "   FROM CAL_INFO T1, " +
+            "        CHECKLIST T2, " +
+            "        USERS T3 " +
+            "   WHERE 1 = 1 " +
+            "   AND T1.BASIS_YMD >= T2.CREATED_AT " +
+            "   AND (T1.BASIS_YMD <= T2.DELETED_AT OR T2.DELETED_AT IS NULL) " +
+            "   AND T2.USER_ID = T3.USER_ID" +
+            "   GROUP BY T1.BASIS_YMD, T3.USER_ID " +
+
+            "   UNION ALL " +
+
+            "   SELECT T1.DONE_DATE AS DATEID, " +
+            "          T2.USER_ID AS USER_ID, " +
+            "          NULL AS TOT_CNT, " +
+            "          COUNT(*) AS DONE_CNT " +
+            "   FROM DONE T1, " +
+            "        USERS T2 " +
+            "   WHERE T1.USER_ID = T2.USER_ID" +
+            "   GROUP BY T1.DONE_DATE, T2.USER_ID " +
+            ") T1, " +
+            " ( " +
+            "   SELECT * FROM REWARD T1 " +
+            "   WHERE YEAR(T1.CREATED_AT) = YEAR(:localDate) " +
+            "     AND MONTH(T1.CREATED_AT) = MONTH(:localDate) " +
+            "   ORDER BY DAY(T1.CREATED_AT) DESC " +
+            "   LIMIT 1 " +
+            ") T2 " +
+            "WHERE 1 = 1 " +
+            "   AND T1.USER_ID = T2.USER_ID" +
+            "   AND T1.USER_ID = :userId " +
+            "   AND T1.DATEID = :localDate " +
+            "GROUP BY T1.DATEID, T1.USER_ID, T2.REWARD ", nativeQuery = true)
+    Double findDailySavedByUserId(@Param("userId") String userId, @Param("localDate") LocalDate localDate);
+
+    // 또래 달성율 평균
+    @Query(value = "SELECT AVG(T1.RATE) AVG " +
+            "FROM ( " +
+            "   WITH CAL_INFO AS " +
+            "   ( " +
+            "       SELECT '2024-01-01' + INTERVAL RNUM-1 DAY  BASIS_YMD, " +
+            "                WEEK('2024-01-01' + INTERVAL RNUM-1 DAY) + 1 WK " +
+            "       FROM    ( " +
+            "                SELECT ROW_NUMBER() OVER(ORDER BY  ordinal_position ) RNUM " +
+            "                FROM information_schema.columns " +
+            "             ) T1 " +
+            "       WHERE  T1.RNUM <= 365 " +
+            "       ORDER BY  1 " +
+            "   ) " +
+            "   SELECT   T1.DATEID            DATEID        , " +
+            "                T1.USER_ID           USER_ID     , " +
+            "                SUM(T1.TOT_CNT)  TOT_CNT   , " +
+            "                SUM(T1.DONE_CNT) DONE_CNT   , " +
+            "                SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT)  RATE " +
+            "       FROM   ( " +
+            "                SELECT  T1.BASIS_YMD       DATEID      , " +
+            "                        T3.USER_ID     USER_ID, " +
+            "                        COUNT(*)   TOT_CNT   , " +
+            "                        NULL      DONE_CNT " +
+            "                FROM    CAL_INFO      T1, " +
+            "                        CHECKLIST    T2, " +
+            "                        USERS       T3 " +
+            "                WHERE    1 = 1 " +
+            "                AND      T1.BASIS_YMD >= T2.CREATED_AT " +
+            "                AND      (T1.BASIS_YMD <= T2.DELETED_AT OR T2.DELETED_AT IS NULL) " +
+            "                AND      T2.USER_ID = T3.USER_ID " +
+            "                AND      YEAR(T3.BIRTH) BETWEEN YEAR(:birth) - 2 AND YEAR(:birth) + 2 " +
+            "                GROUP BY T1.BASIS_YMD, T3.USER_ID " +
+            "                UNION ALL " +
+            "                SELECT   T1.DONE_DATE          DATEID       , " +
+            "                         T2.USER_ID           USER_ID, " +
+            "                         NULL           TOT_CNT    , " +
+            "                         COUNT(*)       DONE_CNT " +
+            "                FROM    DONE   T1, " +
+            "                        USERS T2 " +
+            "                WHERE T1.USER_ID = T2.USER_ID " +
+            "                      AND YEAR(T2.BIRTH) BETWEEN YEAR(:birth) - 2 AND YEAR(:birth) + 2 " +
+            "                GROUP BY T1.DONE_DATE, T2.USER_ID " +
+            "             ) T1 " +
+            "       WHERE        " +
+            "             T1.DATEID = :localDate " +
+            "       GROUP BY DATEID, USER_ID " +
+            "   ) T1 " , nativeQuery = true)
+    Double findDailyAchieveByAge(@Param("birth") LocalDate birth, @Param("localDate") LocalDate localDate);
+
+    // 같은 성별 달성율 평균
+    @Query(value = "SELECT AVG(T1.RATE) AVG " +
+            "FROM ( " +
+            "   WITH CAL_INFO AS " +
+            "   ( " +
+            "       SELECT '2024-01-01' + INTERVAL RNUM-1 DAY  BASIS_YMD, " +
+            "                WEEK('2024-01-01' + INTERVAL RNUM-1 DAY) + 1 WK " +
+            "       FROM    ( " +
+            "                SELECT ROW_NUMBER() OVER(ORDER BY  ordinal_position ) RNUM " +
+            "                FROM information_schema.columns " +
+            "             ) T1 " +
+            "       WHERE  T1.RNUM <= 365 " +
+            "       ORDER BY  1 " +
+            "   ) " +
+            "   SELECT   T1.DATEID            DATEID        , " +
+            "                T1.USER_ID           USER_ID     , " +
+            "                SUM(T1.TOT_CNT)  TOT_CNT   , " +
+            "                SUM(T1.DONE_CNT) DONE_CNT   , " +
+            "                SUM(T1.DONE_CNT) / SUM(T1.TOT_CNT)  RATE " +
+            "       FROM   ( " +
+            "                SELECT  T1.BASIS_YMD       DATEID      , " +
+            "                        T3.USER_ID     USER_ID, " +
+            "                        COUNT(*)   TOT_CNT   , " +
+            "                        NULL      DONE_CNT " +
+            "                FROM    CAL_INFO      T1, " +
+            "                        CHECKLIST    T2, " +
+            "                        USERS       T3 " +
+            "                WHERE    1 = 1 " +
+            "                AND      T1.BASIS_YMD >= T2.CREATED_AT " +
+            "                AND      (T1.BASIS_YMD <= T2.DELETED_AT OR T2.DELETED_AT IS NULL) " +
+            "                AND      T2.USER_ID = T3.USER_ID " +
+            "                AND      T3.GENDER = :gender " +
+            "                GROUP BY T1.BASIS_YMD, T3.USER_ID " +
+            "                UNION ALL " +
+            "                SELECT   T1.DONE_DATE          DATEID       , " +
+            "                         T2.USER_ID           USER_ID, " +
+            "                         NULL           TOT_CNT    , " +
+            "                         COUNT(*)       DONE_CNT " +
+            "                FROM    DONE   T1, " +
+            "                        USERS T2 " +
+            "                WHERE T1.USER_ID = T2.USER_ID " +
+            "                      AND T2.GENDER = :gender " +
+            "                GROUP BY T1.DONE_DATE, T2.USER_ID " +
+            "             ) T1 " +
+            "       WHERE        " +
+            "             T1.DATEID = :localDate " +
+            "       GROUP BY DATEID, USER_ID " +
+            "   ) T1 " , nativeQuery = true)
+    Double findDailyAchieveByGender(@Param("gender") String gender, @Param("localDate") LocalDate localDate);
+
 }

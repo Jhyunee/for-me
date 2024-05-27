@@ -7,6 +7,7 @@ import me.forme.springdeveloper.domain.CService;
 import me.forme.springdeveloper.domain.Reward;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 
@@ -15,12 +16,11 @@ import java.time.YearMonth;
 @NoArgsConstructor
 public class AddRewardRequest {
     private String userId;
-    private String createdAt;
 
-    public Reward toEntity(String userId, String date) {
+    public Reward toEntity(String userId) {
         return Reward.builder()
                 .userId(userId)
-                .createdAt(date)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +23,7 @@ public class Reward {
     private String userId;
 
     @Column(name = "created_at", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @ColumnDefault("0")
     @Column(name = "reward")
@@ -33,14 +34,19 @@ public class Reward {
     private Long saving;
 
     @Builder
-    Reward(String userId, String createdAt){
+    Reward(String userId, String month, LocalDateTime createdAt){
         this.userId = userId;
         this.createdAt = createdAt;
         this.reward = 0L;
         this.saving = 0L;
     }
 
-    public void update(Long reward) {
+    public void update(Long reward, LocalDateTime dateTime) {
         this.reward = reward;
+        this.createdAt = dateTime;
+    }
+
+    public void updateSaving(Long saving){
+        this.saving = saving;
     }
 }
