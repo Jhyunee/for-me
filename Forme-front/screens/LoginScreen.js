@@ -2,6 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button, Alert, StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import * as Keychain from 'react-native-keychain';
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
+
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -11,36 +16,42 @@ const LoginScreen = () => {
 
     const handleLogin = async () => {
         try {
-          const response = await fetch('http://10.0.2.2:8080/login', {
-            method: 'POST',
-            headers: {
-                Accept : 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                userId : userId,
-                password : password,
-            }),
-          });
-          if (response.ok) {
-            // 로그인 성공
-            // 액세스 토큰 저장
-            const getAccessToken = response.headers.get("Authorization").replace('Bearer ', '');
-            await AsyncStorage.setItem('accessToken', getAccessToken);
-            // 리프레서 토큰
-            const getRefreshToken = response.headers.get("Refresh-Token");
-            await AsyncStorage.setItem('refreshToken', getRefreshToken);
-            Alert.alert('Success', 'Logged in successfully!');
-            navigation.navigate('Main');
-          } else {
-            // 로그인 실패
-            Alert.alert('Error', 'Failed to log in. Please check your credentials.');
-          }
+            console.log('Sending request with:', { userId, password }); // 요청 전 로그
+
+            const response = await axios.post('http://172.30.1.36:8080/login', {
+                userId: userId,
+                password: password,
+            });
+
+            console.log('Received response:', response); // 응답 후 로그
+
+            if (response.status === 200) {
+                // 로그인 성공
+                const AccessToken = response.headers.get("Authorization").replace('Bearer ', '');
+                const RefreshToken = response.headers["refresh-token"];
+                
+                console.log("액세스 토큰:", AccessToken);
+                console.log("리프레시 토큰:", RefreshToken);
+                
+                await AsyncStorage.setItem('accessToken', AccessToken);
+                await AsyncStorage.setItem('refreshToken', RefreshToken);
+                
+                const decodedToken = jwtDecode(AccessToken);
+                
+                console.log(decodedToken);
+
+                Alert.alert('Success', 'Logged in successfully!');
+                navigation.navigate('MyPage');
+            } else {
+                // 로그인 실패
+                Alert.alert('Error', 'Failed to log in. Please check your credentials.');
+            }
         } catch (error) {
-          console.error('Error logging in:', error);
-          Alert.alert('Error', 'Failed to log in. Please try again later.');
+            console.error('Error logging in:', error);
+            Alert.alert('Error', 'Failed to log in. Please try again later.');
         }
-      };
+    };
+
 
   return (
     <View style={styles.container}>
@@ -58,9 +69,9 @@ const LoginScreen = () => {
                 style={styles.input} 
             />
             <View style={styles.loginContainer}>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText} onPress={handleLogin}>로그인</Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>로그인</Text>
+            </TouchableOpacity>
             </View>
         </View>
         <View style={styles.buttonContainer}>

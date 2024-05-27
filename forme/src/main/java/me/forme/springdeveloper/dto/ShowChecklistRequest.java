@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 public class ShowChecklistRequest {
-    private String user_id;
+    //private String user_id;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate select_date;
 }

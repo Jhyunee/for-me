@@ -1,11 +1,38 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MyPageScreen = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [monthlyEffort, setMonthlyEffort] = useState('30,000');
+
+
+  const fetchTesttestEndpoint = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+
+      const response = await fetch('http://172.30.1.86:8080/testtest', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // 여기에 AccessToken을 넣어주세요
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const userId = await response.text();
+      console.log('User ID:', userId);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+  
+  
   
   const openModal = () => {
     setModalVisible(true);
@@ -20,6 +47,44 @@ const MyPageScreen = () => {
 
     setModalVisible(false);
   };
+
+  const handleLogin = async () => {
+    try {
+        console.log('Sending request with:', { userId, password }); // 요청 전 로그
+
+        const response = await axios.post('http://172.30.1.36:8080/login', {
+            userId: userId,
+            password: password,
+        });
+
+        console.log('Received response:', response); // 응답 후 로그
+
+        if (response.status === 200) {
+            // 로그인 성공
+            const AccessToken = response.headers.get("Authorization").replace('Bearer ', '');
+            const RefreshToken = response.headers["refresh-token"];
+            
+            console.log("액세스 토큰:", AccessToken);
+            console.log("리프레시 토큰:", RefreshToken);
+            
+            await AsyncStorage.setItem('accessToken', AccessToken);
+            await AsyncStorage.setItem('refreshToken', RefreshToken);
+            
+            const decodedToken = jwtDecode(AccessToken);
+            
+            console.log(decodedToken);
+
+            Alert.alert('Success', 'Logged in successfully!');
+            navigation.navigate('MyPage');
+        } else {
+            // 로그인 실패
+            Alert.alert('Error', 'Failed to log in. Please check your credentials.');
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        Alert.alert('Error', 'Failed to log in. Please try again later.');
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -108,8 +173,13 @@ const MyPageScreen = () => {
         </TouchableOpacity>
       </View>
 
+
+
       <View style={[styles.versionInfoContainer, { marginVertical: 40 }]}>
         <Text style={styles.versionInfo}>로그아웃</Text>
+        <TouchableOpacity style={styles.button} onPress={fetchTesttestEndpoint}>
+                <Text style={styles.buttonText}>토큰 확인</Text>
+            </TouchableOpacity>
       </View>
       <View style={[styles.versionInfoContainer, { marginVertical: 40 }]}>
         <Text style={styles.versionInfo}>버전 정보 1.1.1</Text>

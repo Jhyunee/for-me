@@ -1,8 +1,6 @@
 package me.forme.springdeveloper.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,25 +11,16 @@ import me.forme.springdeveloper.config.jwt.TokenProvider;
 import me.forme.springdeveloper.domain.RefreshToken;
 import me.forme.springdeveloper.domain.User;
 import me.forme.springdeveloper.dto.LoginRequest;
+import me.forme.springdeveloper.dto.TokenResponse;
 import me.forme.springdeveloper.repository.RefreshTokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Date;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,7 +36,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 시도 : JwtAuthenticationFilter.attemptAuthentication");
         try {
             // 인증 처리를 하는 메서드
-            // 여기서 select 이루어짐 → 확인하면서 비밀번호도 확인하고 실패하면 unsuccessfulAuthentication 메서드로
+            // 여기서 select 이루어짐 → successfulAuthentication확인하면서 비밀번호도 확인하고 실패하면 unsuccessfulAuthentication 메서드로
             setUsernameParameter("userId");
             LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
             log.info(loginRequest.getUserId());
@@ -77,7 +66,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("Refresh-Token", refreshToken);
+
+        // 응답 본문에 토큰을 추가
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String responseBody = new ObjectMapper().writeValueAsString(new TokenResponse(accessToken, refreshToken));
+        response.getWriter().write(responseBody);
     }
+
+
 
 
     @Override

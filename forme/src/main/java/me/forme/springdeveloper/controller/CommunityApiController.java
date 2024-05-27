@@ -28,7 +28,7 @@ public class CommunityApiController {
 
     private final CommunityService communityService;
 
-    LocalDate localDate = LocalDate.now().minusDays(1);
+    LocalDate localDate = LocalDate.now();
 
     // {id}와 @PathVariable String id는 테스트용
     // -> {id} 지우고 Principal principal, id에 principal.getName()
@@ -41,7 +41,7 @@ public class CommunityApiController {
         // 다른 유저들과의 노력금 비교 (또래 | 같은성별)
         map.put("reward", communityService.getSaving(id));
         // 다른 유저들과의 달성율 비교 (또래 | 같은성별)
-        map.put("achieve", communityService.getAchievement(id));
+
         return map;
     }
 
@@ -49,6 +49,18 @@ public class CommunityApiController {
     @GetMapping("/api/community/reward/{id}")
     public Map<String, Long> reward(@PathVariable String id) {
         localDate = LocalDate.now();
+        return communityService.findByUserIdAndDate(id, localDate);
+    }
+
+    @GetMapping("/api/community/reward/forward/{id}")
+    public Map<String, Long> forward(/*Principal principal*/@PathVariable String id) {
+        localDate = localDate.plusMonths(3);
+        return communityService.findByUserIdAndDate(id, localDate);
+    }
+
+    @GetMapping("/api/community/reward/backward/{id}")
+    public Map<String, Long> backward(/*Principal principal*/@PathVariable String id) {
+        localDate = localDate.minusMonths(3);
         return communityService.findByUserIdAndDate(id, localDate);
     }
 

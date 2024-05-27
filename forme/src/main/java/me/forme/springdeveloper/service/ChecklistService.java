@@ -29,9 +29,9 @@ public class ChecklistService {
 
 
     //체크리스트 조회 메서드 (done 적용 버전)
-    public Map<String, List<Checklist>> getChecklistsByDate(ShowChecklistRequest request) {
+    public Map<String, List<Checklist>> getChecklistsByDate(ShowChecklistRequest request, String userId) {
         // 해당 날짜에 완료된 Done 엔티티 가져오기
-        List<Done> doneList = doneRepository.findByUserAndDoneDate(request.getUser_id(), request.getSelect_date());
+        List<Done> doneList = doneRepository.findByUserAndDoneDate(userId, request.getSelect_date());
 
         // 완료된 체크리스트의 ID 목록 추출
         List<Long> doneChecklistIds = doneList.stream()
@@ -39,7 +39,7 @@ public class ChecklistService {
                 .collect(Collectors.toList());
 
         // 모든 체크리스트 가져오기
-        List<Checklist> allChecklists = checklistRepository.findByUserAndDate(request.getUser_id(), request.getSelect_date());
+        List<Checklist> allChecklists = checklistRepository.findByUserAndDate(userId, request.getSelect_date());
 
         // 완료된 체크리스트와 완료되지 않은 체크리스트를 구분
         List<Checklist> doneChecklists = allChecklists.stream()
