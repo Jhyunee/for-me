@@ -39,9 +39,9 @@ public class CommunityApiController {
         Map<String, Map<?,?>> map = new HashMap<>();
         map.put("checklist", communityService.getRanChecklist(checkRequest));
         // 다른 유저들과의 노력금 비교 (또래 | 같은성별)
-        map.put("reward", communityService.getSaving(id));
+        map.put("reward", communityService.getReward(id));
         // 다른 유저들과의 달성율 비교 (또래 | 같은성별)
-
+        map.put("achieve", communityService.getAchieve(id));
         return map;
     }
 

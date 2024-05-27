@@ -29,7 +29,6 @@ public class MypageService {
     private final UserRepository userRepository;
     private final RewardRepository rewardRepository;
 
-    private final RewardService rewardService;
 
     LocalDate localDate = LocalDate.now();
     private List<String> getUserId(){
