@@ -31,10 +31,10 @@ public class MypageService {
 
 
     LocalDate localDate = LocalDate.now();
-    private List<String> getUserId(){
-        List<String> userIds = userRepository.findUserIdAll();
-        return userIds;
-    }
+//    private List<String> getUserId(){
+//        List<String> userIds = userRepository.findUserIdAll();
+//        return userIds;
+//    }
 
     // 회원 정보 (이름, 아이디, 이메일)
     public Map<String, String> getUserInfo(String userId){
@@ -81,6 +81,8 @@ public class MypageService {
         else return null;
     }
 
+
+    // saving
     @Transactional
     public void savedSaving(String userId) {
         Double saved = customQueryRepository.findDailySavedByUserId(userId, localDate.minusDays(1));
@@ -93,12 +95,12 @@ public class MypageService {
     }
 
     // 매일 00시마다 전날 노력금 저장
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void scheduleSavedSaving() {
-        List<String> userIds = getUserId();
-        for(String userId : userIds) {
-            savedSaving(userId);
-        }
-    }
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void scheduleSavedSaving() {
+//        List<String> userIds = getUserId();
+//        for(String userId : userIds) {
+//            savedSaving(userId);
+//        }
+//    }
 
 }
