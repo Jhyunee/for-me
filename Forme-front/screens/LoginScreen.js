@@ -18,7 +18,7 @@ const LoginScreen = () => {
         try {
             console.log('Sending request with:', { userId, password }); // 요청 전 로그
 
-            const response = await axios.post('http://172.30.1.36:8080/login', {
+            const response = await axios.post('http://192.168.0.27:8080/login', {
                 userId: userId,
                 password: password,
             });
