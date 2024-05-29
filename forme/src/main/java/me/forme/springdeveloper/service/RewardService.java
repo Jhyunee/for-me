@@ -20,36 +20,25 @@ public class RewardService {
 
     LocalDate localDate = LocalDate.now();
 
-    public Reward findById(String userId, LocalDate localDate) {
-        return rewardRepository.findByUserIdAndCreatedAt(userId, localDate)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + userId));
+    public Reward save(String userId, AddRewardRequest request){
+        Reward originReward = Reward.builder()
+                .userId(userId)
+                .createdAt(LocalDateTime.now())
+                .reward(0L)
+                .build();
+        return rewardRepository.save(originReward);
     }
 
-    public Reward findByDate(String userId, LocalDate date){
-        return rewardRepository.findByUserIdAndCreatedAt(userId, date).orElse(null);
+    public Reward update(String userId, UpdateRewardRequest request) {
+        Reward updatedReward = Reward.builder()
+                .userId(userId)
+                .createdAt(LocalDateTime.now())
+                .reward(request.getReward())
+                .build();
+        return rewardRepository.save(updatedReward);
+    }
+    public Reward saveReward(Reward reward) {
+        return rewardRepository.save(reward);
     }
 
-
-    public Reward save(AddRewardRequest request, String userId){
-        return rewardRepository.save(request.toEntity(userId));
-    }
-
-    @Transactional
-    public Reward update(String userId, UpdateRewardRequest request){
-        Reward reward = rewardRepository.findByUserId(userId).orElse(null);
-        if(reward != null) {
-            reward.update(request.getReward(), LocalDateTime.now());
-            rewardRepository.save(reward);
-        }
-        return reward;
-    }
-
-//    @Transactional
-//    public void updateSaving(String userId, Long saving){
-//        Reward reward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).orElse(null);
-//        if(reward != null){
-//            reward.updateSaving(reward.getSaving() + saving);
-//            rewardRepository.save(reward);
-//        }
-//    }
 }

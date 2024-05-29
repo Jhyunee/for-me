@@ -25,20 +25,20 @@ public class Reward {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @ColumnDefault("0")
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    //@ColumnDefault("0")
     @Column(name = "reward")
     private Long reward;
 
-    @ColumnDefault("0")
-    @Column(name = "saved")
-    private Long saving;
 
     @Builder
-    Reward(String userId, String month, LocalDateTime createdAt){
+    Reward(String userId, String month, LocalDateTime createdAt, Long reward){
         this.userId = userId;
         this.createdAt = createdAt;
-        this.reward = 0L;
-        this.saving = 0L;
+        this.reward = reward;
+        //this.saving = 0L;
     }
 
     public void update(Long reward, LocalDateTime dateTime) {
@@ -46,7 +46,4 @@ public class Reward {
         this.createdAt = dateTime;
     }
 
-    public void updateSaving(Long saving){
-        this.saving = saving;
-    }
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.forme.springdeveloper.domain.Reward;
 import me.forme.springdeveloper.domain.User;
+import me.forme.springdeveloper.dto.ShowCommunityRequest;
 import me.forme.springdeveloper.repository.CustomQueryRepository;
 import me.forme.springdeveloper.repository.RewardRepository;
 import me.forme.springdeveloper.repository.UserRepository;
@@ -31,12 +32,8 @@ public class MypageService {
 
 
     LocalDate localDate = LocalDate.now();
-    private List<String> getUserId(){
-        List<String> userIds = userRepository.findUserIdAll();
-        return userIds;
-    }
 
-    // 회원 정보 (이름, 아이디, 이메일)
+    // 회원 정보 (이름, 아이디, 이메일) OK!
     public Map<String, String> getUserInfo(String userId){
         Map<String, String> map = new HashMap<>();
         User user = userRepository.findByUserId(userId).orElse(null);
@@ -48,16 +45,16 @@ public class MypageService {
         return map;
     }
 
-    // 이번달 쌓인 노력금
+    // 이번달 쌓인 노력금 OK!
     public Map<String, Long> getSaved(String userId){
         Map<String, Long> map = new HashMap<>();
-        Long saved = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).get().getSaving();
+        Long saved = rewardRepository.findSavedByUserIdAndDate(userId, localDate);
         map.put("saving", saved);
         return map;
     }
 
 
-    // 오늘의 달성율
+    // 오늘의 달성율 ok!
     public Map<String, Double> findByAchieveByUserId(String userId) {
         Map<String, Double> map = new HashMap<>();
         try {
@@ -70,35 +67,14 @@ public class MypageService {
         return map;
     }
 
-    // 1달 설정한 노력금
+    // 이번 달 설정한 노력금 ok!
     public Map<String, Long> getMonthlyReward(String userId){
         Map<String, Long> map = new HashMap<>();
-        Long reward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).get().getReward();
+        Reward reward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate);
         if(reward != null) {
-            map.put("reward", reward);
+            map.put("reward", reward.getReward());
             return map;
         }
         else return null;
     }
-
-    @Transactional
-    public void savedSaving(String userId) {
-        Double saved = customQueryRepository.findDailySavedByUserId(userId, localDate.minusDays(1));
-        Long saving = round(saved);
-        Reward reward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).orElse(null);
-        if(reward != null){
-            reward.updateSaving(reward.getSaving() + saving);
-            rewardRepository.save(reward);
-        }
-    }
-
-    // 매일 00시마다 전날 노력금 저장
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void scheduleSavedSaving() {
-        List<String> userIds = getUserId();
-        for(String userId : userIds) {
-            savedSaving(userId);
-        }
-    }
-
 }

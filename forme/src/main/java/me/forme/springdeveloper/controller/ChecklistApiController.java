@@ -31,9 +31,6 @@ public class ChecklistApiController {
     private final FlaskClientService flaskClientService;
 
 
-
-    //private LocalDate dateTime = LocalDate.now();
-
     //체크리스트 조회 (선택한 날짜)
     @GetMapping("/api/checklists")
     public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request) {
@@ -83,8 +80,8 @@ public class ChecklistApiController {
     }
 
     //체크리스트 완료
-    @PatchMapping("/api/checklists/check/{id}")
-    public ResponseEntity<Checklist> done(@PathVariable Long id, @RequestBody AddDoneRequest request) {
+    @PatchMapping("/api/checklists/check")
+    public ResponseEntity<Checklist> done(@RequestBody AddDoneRequest request) {
         Done done = checklistService.done(request);
         return (done != null) ?
                 ResponseEntity.status(HttpStatus.NO_CONTENT).build() :

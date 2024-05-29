@@ -17,10 +17,4 @@ import java.time.YearMonth;
 public class AddRewardRequest {
     private String userId;
 
-    public Reward toEntity(String userId) {
-        return Reward.builder()
-                .userId(userId)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
 }

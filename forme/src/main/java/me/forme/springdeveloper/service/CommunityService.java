@@ -2,20 +2,16 @@ package me.forme.springdeveloper.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.domain.Reward;
-import me.forme.springdeveloper.dto.ShowChecklistRequest;
+import me.forme.springdeveloper.repository.ChecklistRepository;
 import me.forme.springdeveloper.repository.CustomQueryRepository;
 import me.forme.springdeveloper.repository.RewardRepository;
 import me.forme.springdeveloper.repository.UserRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,54 +22,32 @@ public class CommunityService {
     private final RewardRepository rewardRepository;
     private final UserRepository userRepository;
     private final CustomQueryRepository customQueryRepository;
+    private final ChecklistRepository checklistRepository;
 
     LocalDate localDate = LocalDate.now();
 
-    // 다른 유저들의 체크리스트 랜덤 3개
-    public Map<Long, String> getRanChecklist (ShowChecklistRequest request) {
-        long [] array = new long[3];
-        Long id = checklistService.findByMaxId();
-        for(int i = 0; i < 3; i++) {
-            array[i] = (long) (Math.random()*id+1);
-            // 중복값 제거
-            for(int j = 0; j < i; j++) {
-                if(array[i] == array[j]){
-                    i--;
-                    break;
-                }
-            }
+    public Map<Long, String> findRandomChecklistsExceptUserId(String userId) {
+        List<Checklist> checklists = checklistRepository.findRandomChecklistsExceptUserId(userId);
+        Map<Long, String> result = new HashMap<>();
+        for (Checklist checklist : checklists) {
+            result.put(checklist.getId(), checklist.getName());
         }
-
-        Map<Long, String> ranChecklist = new HashMap<>();
-        for(int i = 0; i < 3; i++) {
-            ranChecklist.put(i+1L, checklistService.findById(array[i]).getName());
-        }
-
-        return ranChecklist;
+        return result;
     }
 
-    // 그동안 모은 노력금(월별) -> reward의 월별 saving
-    public Map<String, Long> findByUserIdAndDate(String userId, LocalDate localDate) {
-        Map<String, Long> map = new HashMap<>();
-        LocalDate todayMonth = LocalDate.now();
-        LocalDate lastMonth = localDate.minusMonths(1);
-        LocalDate last2Month = localDate.minusMonths(2);
 
-        Reward today = rewardRepository.findByUserIdAndCreatedAt(userId, todayMonth).orElse(null);
-        Reward last = rewardRepository.findByUserIdAndCreatedAt(userId, lastMonth).orElse(null);
-        Reward last2 = rewardRepository.findByUserIdAndCreatedAt(userId, last2Month).orElse(null);
+    // 사용자 별, 월별 축적 노력금 return 필요!!!!!!!!!!!!!!!!
+    public List<Map<Long, Double>> findSavedByUserId(String userId) {
+        List<Map<Long, Double>> queryResult = rewardRepository.findSavedByUserId(userId);
+        if (queryResult != null && !queryResult.isEmpty()) {
+            return queryResult; // 쿼리 결과가 있을 경우 결과 반환
+        } else {
+            return new ArrayList<>(); // 쿼리 결과가 없을 경우 빈 리스트 반환
+        }
 
-        if(today != null) {
-            map.put(todayMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")), today.getSaving());
-        }
-        if(last != null) {
-            map.put(lastMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")), last.getSaving());
-        }
-        if(last2 != null) {
-            map.put(last2Month.format(DateTimeFormatter.ofPattern("yyyy.MM")), last2.getSaving());
-        }
-        return map;
     }
+
+
 
     // 다른 유저들과의 월 노력금 설정 비교 (또래 | 같은성별)
     public Map<String, Long> getReward(String userId) {
@@ -90,8 +64,15 @@ public class CommunityService {
         map.put("gender", genderReward);
 
         // 나의 노력금
-        Long myReward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate).get().getReward();
-        map.put("myReward", myReward);
+        Reward myReward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate);
+        Long reward = 0L;
+        if (myReward == null) {
+            reward = 0L;
+        }
+        else {
+            reward = myReward.getReward();
+        }
+        map.put("myReward", reward);
 
         return map;
     }
