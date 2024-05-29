@@ -4,16 +4,34 @@ import { useNavigation } from "@react-navigation/native";
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation();
-  const [password, setPassword] = useState('');
+  const [oldPassword, configPassword] = useState('');
+  const [newPassword, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const userId = 'hello';
 
-  const handleChangePassword = () => {
-    if (password === confirmPassword) {
-      // 비밀번호 변경 로직 구현
-      console.log('Password changed successfully');
-    } else {
-      console.log('Passwords do not match');
+  const handleChangePassword = async() => {
+    const token = await AsyncStorage.getItem('accessToken');
+
+    if (newpassword !== confirmPassword) {
+      Alert.alert('에러 발생', '비밀번호 확인이 일치하지 않습니다.');
+      return;
+    }
+    
+    try{
+      console.log('Sending request with:', { oldPassword, newPassword });
+
+      const response = await axios.post('http://172.30.1.9:8080/api/mypage/password',{
+        token: token,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      })
+      .then(response => {
+        console.log('Password change request successful:', response.data);
+      })
+      .catch(error => {
+        console.error('Error changing password:', error);
+      });
+    } catch(error){
+      console.log("error", error);
     }
   };
 
@@ -25,7 +43,7 @@ const ChangePasswordScreen = () => {
       <View style={styles.box}>
         <View style={styles.inputContainer}>
           <Text style={styles.icon}>👤</Text>
-          <Text style={styles.userId}>{userId}</Text>
+          <Text style={styles.userId}>아이디</Text>
         </View>
         <View style={styles.separator} />
         <View style={styles.inputContainer}>
@@ -36,11 +54,11 @@ const ChangePasswordScreen = () => {
             placeholderTextColor="#808080" // 회색 placeholder
             secureTextEntry={true}
             onChangeText={setPassword}
-            value={password}
+            value={newPassword}
           />
         </View>
         <View style={styles.separator} />
-        <View style={styles.inputContainer}>
+         <View style={styles.inputContainer}>
           <Text style={styles.icon}>🔒</Text>
           <TextInput
             style={styles.input}
@@ -51,6 +69,7 @@ const ChangePasswordScreen = () => {
             value={confirmPassword}
           />
         </View>
+
       </View>
       <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
         <Text style={styles.buttonText}>비밀번호 변경</Text>

@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { Alert, View, Text, TextInput, Button, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'; 
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
 
 const { width, height } = Dimensions.get('window');
 
@@ -8,43 +12,53 @@ const AskQuestionScreen = () => {
   const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [userId, setUserId] = useState('');
 
-  const handleAskQuestion = async() => {
-    try{
-      const response = await fetch('http://10.0.2.2:8080/api/mypage/services',{
-        method: 'POST',
-        headers:{
-          Accept : 'applicaiton/json',
-          'Content-Type': 'application/json',
-        },
-        body : JSON.stringify({
-          title : title,
-          content : content,
-          user_id : userId,
-        })
-        
-      })
-      console.log('Title:', title);
-      console.log('Content:', content);
-    } catch(error){
-      console.error(error);
+
+  const handleAskQuestion = async () => {
+    const data = {
+      title: title,
+      content: content,
+    };
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+  
+      console.log('Sending request with:', { title, content });
+      const response = await axios.post('http://172.16.11.224:8080/api/mypage/services', data, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Refresh-Token': refreshToken
+        }
+      });
+  
+      console.log(accessToken);
+      if (response.status === 201) {
+        Alert.alert('문의 등록이 완료되었습니다.');
+        navigation.navigate('Service');
+      } else {
+        console.log("error", response);
+      }
+    } catch(err) {
+      // 네트워크 오류 처리
+      console.error('Network error:', err);
+      Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
     }
   };
+  
 
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
         <TouchableOpacity style={styles.navIcon}>
-          <Text>⚙️</Text>
+        <Image source={require('../assets/setting.png')} style={styles.icon}/>
         </TouchableOpacity>
         <Text style={styles.forMe}>For Me</Text>
         <View style={styles.navIcons}>
           <TouchableOpacity style={styles.icon}>
-            <Text>🔔</Text>
+          <Image source={require('../assets/bell.png')} style={styles.icon}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.icon}>
-            <Text>🔥</Text>
+          <Image source={require('../assets/flame.png')} style={styles.icon}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -68,12 +82,7 @@ const AskQuestionScreen = () => {
         multiline={true}
         numberOfLines={5}
       />
-      <TextInput
-        style={styles.titleInput}
-        placeholder="유저 아이디"
-        value={userId}
-        onChangeText={setUserId}
-      />
+
       <TouchableOpacity
         style={styles.askButton}
         onPress={handleAskQuestion}
@@ -118,7 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   navIcon: {
-    marginRight: 'auto', // 가장 왼쪽 정렬
+    marginRight: 'auto',
   },
   forMe: {
     fontWeight: 'bold',
@@ -129,7 +138,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   icon: {
-    marginLeft: 10,
+    width: 20,
+    height: 20,
+    marginLeft: 15,
   },
   titleInput: {
     borderWidth: 1,

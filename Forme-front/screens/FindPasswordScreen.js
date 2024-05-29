@@ -5,12 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-// import { jwtDecode } from "jwt-decode";
+import { Hoshi } from 'react-native-textinput-effects';
 
-const LoginScreen = () => {
+const FindPasswordScreen = () => {
     const navigation = useNavigation();
     const [userId, setId] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setemail] = useState('');
     let [fontsLoaded] = useFonts({
         'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
         'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
@@ -20,73 +20,63 @@ const LoginScreen = () => {
         return <StatusBar />;
     }
 
-    const handleLogin = async () => {
-        const data = {
-            userId: userId,
-            password: password
-        };
-        try {
-            // console.log('Sending request with:', { userId, password });
-            const response = await axios.post('http://172.16.11.224:8080/login', data);
-            // console.log('Received response:', response.data);
+    // const handleLogin = async () => {
+    //     const data = {
+    //         userId: userId,
+    //         email: email
+    //     };
+    //     try {
+    //         // console.log('Sending request with:', { userId, password });
+    //         const response = await axios.post('http://172.16.11.224:8080/login', data);
+    //         // console.log('Received response:', response.data);
 
-            // 로그인 성공
-            if (response.status === 200) {
-                const AccessToken = response.headers.get("Authorization").replace('Bearer ', '');
-                const RefreshToken = response.headers["refresh-token"];
+    //         // 로그인 성공
+    //         if (response.status === 200) {
+    //             const AccessToken = response.headers.get("Authorization").replace('Bearer ', '');
+    //             const RefreshToken = response.headers["refresh-token"];
                 
-                // AsyncStorage에 액세스 토큰, 리프레시 토큰 저장 -> 지속적 보관
-                await AsyncStorage.setItem('accessToken', AccessToken);
-                await AsyncStorage.setItem('refreshToken', RefreshToken);
+    //             // AsyncStorage에 액세스 토큰, 리프레시 토큰 저장 -> 지속적 보관
+    //             await AsyncStorage.setItem('accessToken', AccessToken);
+    //             await AsyncStorage.setItem('refreshToken', RefreshToken);
                 
-                // 토큰 디코드 필요시 사용 코드
-                // const decodedToken = jwtDecode(AccessToken);
-                // console.log(decodedToken);
+    //             // 토큰 디코드 필요시 사용 코드
+    //             // const decodedToken = jwtDecode(AccessToken);
+    //             // console.log(decodedToken);
 
-                // 체크리스트 페이지 완성되면 체크리스트 페이지로 변경 필요
-                navigation.navigate('MyPage');
-            } else {
-                // 인증 실패 또는 기타 오류
-                let errorMessage = '알 수 없는 오류가 발생했습니다.';
-                if (response.status === 401) {
-                    errorMessage = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
-                } else if (response.status === 500) {
-                    errorMessage = '서버에 문제가 발생했습니다. 나중에 다시 시도해주세요.';
-                }
-                Alert.alert('Error', errorMessage);
-            }
-        } catch (error) {
-            let errorMessage = '알 수 없는 오류가 발생했습니다.';
-            if (error.response) {
-                // 서버가 응답을 반환한 경우
-                const { status, data } = error.response;
-                if (status === 400) {
-                    errorMessage = '입력한 정보를 확인해주세요.';
-                } else if (status === 404) {
-                    errorMessage = '서버를 찾을 수 없습니다.';
-                } else {
-                    errorMessage = `알 수 없는 오류가 발생했습니다: ${data.message}`;
-                }
-            } else if (error.request) {
-                // 서버가 응답을 반환하지 않은 경우
-                errorMessage = '서버에서 응답이 없습니다. 인터넷 연결을 확인해주세요.';
-            } else {
-                // 요청 설정 중 오류가 발생한 경우
-                errorMessage = `요청 중 오류가 발생했습니다: ${error.message}`;
-            }
-            Alert.alert('Error', errorMessage);
-        }
-    };
-
-    const handleBackButton = () => {
-        if (isLoggedIn) {
-            // 로그인 상태일 때 뒤로가기 동작 방지
-            return true;
-        } else {
-            // 로그인 상태가 아닐 때 기본 동작 수행
-            return false;
-        }
-    };
+    //             // 체크리스트 페이지 완성되면 체크리스트 페이지로 변경 필요
+    //             navigation.navigate('MyPage');
+    //         } else {
+    //             // 인증 실패 또는 기타 오류
+    //             let errorMessage = '알 수 없는 오류가 발생했습니다.';
+    //             if (response.status === 401) {
+    //                 errorMessage = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
+    //             } else if (response.status === 500) {
+    //                 errorMessage = '서버에 문제가 발생했습니다. 나중에 다시 시도해주세요.';
+    //             }
+    //             Alert.alert('Error', errorMessage);
+    //         }
+    //     } catch (error) {
+    //         let errorMessage = '알 수 없는 오류가 발생했습니다.';
+    //         if (error.response) {
+    //             // 서버가 응답을 반환한 경우
+    //             const { status, data } = error.response;
+    //             if (status === 400) {
+    //                 errorMessage = '입력한 정보를 확인해주세요.';
+    //             } else if (status === 404) {
+    //                 errorMessage = '서버를 찾을 수 없습니다.';
+    //             } else {
+    //                 errorMessage = `알 수 없는 오류가 발생했습니다: ${data.message}`;
+    //             }
+    //         } else if (error.request) {
+    //             // 서버가 응답을 반환하지 않은 경우
+    //             errorMessage = '서버에서 응답이 없습니다. 인터넷 연결을 확인해주세요.';
+    //         } else {
+    //             // 요청 설정 중 오류가 발생한 경우
+    //             errorMessage = `요청 중 오류가 발생했습니다: ${error.message}`;
+    //         }
+    //         Alert.alert('Error', errorMessage);
+    //     }
+    // };
     
     return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'android' ? 'height' : 'padding'}>
@@ -110,29 +100,24 @@ const LoginScreen = () => {
             </View>
             <View style={styles.inputDivider} />
             <View style={styles.inputWrapper2}>
-                <Image source={require('../assets/lock.png')} style={styles.icon}/>
+                <Image source={require('../assets/mail.png')} style={styles.icon}/>
                 <TextInput 
-                    placeholder="비밀번호"
-                    onChangeText={ text => setPassword(text)}
-                    value={password}
+                    placeholder="이메일"
+                    onChangeText={ text => setemail(text)}
+                    value={email}
                     style={styles.input}
                     width='80%'
                     placeholderTextColor="#D1D1D1"
                     placeholderStyle={{ fontFamily: 'Pretendard-Regular' }}
-                    secureTextEntry={true}
                 />
             </View>
         </View>
         <View style={styles.loginContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>로그인</Text>
+            <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>비밀번호 찾기</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.linkContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('FindPw')}>
-                    <Text style={[styles.linkText, styles.grayText]}>비밀번호 찾기</Text>
-                </TouchableOpacity>
-                    { <Text style={styles.divider}> | </Text>  }
                 <TouchableOpacity onPress={() => navigation.navigate('FindId')}>
                     <Text style={[styles.linkText, styles.grayText]}>아이디 찾기</Text>
                 </TouchableOpacity>
@@ -151,7 +136,7 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen
+export default FindPasswordScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -169,7 +154,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter-ExtraBoldItalic',
         fontSize: 40,
         textAlign: 'center'
-    },
+      },
     inputContainer: {
         width: '70%'
     },

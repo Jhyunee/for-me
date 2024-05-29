@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, ScrollView, Image, StyleSheet } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import "core-js/stable/atob";
+import axios from 'axios'; 
 
 const CustomerServiceScreen = () => {
   const navigation = useNavigation();
@@ -9,28 +12,30 @@ const CustomerServiceScreen = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedIndex, setExpandedIndex] = useState(-1);
+
+  const [questions, setQuestions] = useState([]);
   
-  const getDatas = async () => {
-    try {
-        const response = await fetch('http://10.0.2.2:8080/api/mypage/services');
-        const json = await response.json();
-        setData(json);
-    } catch(error){
-        console.error(error);
-    }
-  }
 
   useEffect(() => {
-    getDatas();
-  },[]);
-
-  const [questions, setQuestions] = useState([
-    { content: "마이페이지 클릭 오류납니다..", date: "2024-04-20" },
-    { content: "비밀번호 변경이 안되네요ㅠㅠ", date: "2024-04-19" },
-    { content: "이미 삭제한 항목 복구는 안되나요?", date: "2024-04-18" },
-    { content: "항목 이름 중복이라고 뜨네요,,", date: "2024-04-17" }
-    
-  ]);
+    const fetchData = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        const refreshToken = await AsyncStorage.getItem('refreshToken');
+        
+        const response = await axios.get('http://172.16.11.224:8080/api/mypage/services', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Refresh-Token': refreshToken
+          }
+        });
+        setQuestions(response.data);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   const handleSearch = () => {
     // 검색 기능
@@ -89,7 +94,6 @@ const CustomerServiceScreen = () => {
         resizeMode="contain"
       />
       <View style={styles.listView}>
-        <Text style={styles.listTitle}>데이터 출력</Text>
         {data.map((item)=>(
           <View key={item.id}>
             <Text>Title: {item.title}</Text>
@@ -102,25 +106,26 @@ const CustomerServiceScreen = () => {
         <Text></Text>
       </View>
       <ScrollView style={styles.questionContainer}>
-        {questions.map((item, index) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => handleQuestionPress(index)}
-            style={styles.questionItem}
-          >
-            <View style={styles.questionHeader}>
-              <Text>{data.title}</Text>
-              <Text style={styles.dateText}>{data.user_id}</Text>
-              <Text>{expandedIndex === index ? '🔽' : '▶️'}</Text>
-            </View>
-            {expandedIndex === index && (
-              <Text style={styles.questionDetail}>
-                {data.content}
-              </Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+  {questions.map((item, index) => (
+    <TouchableOpacity
+      key={index} // 혹은 item.id를 사용할 수 있음
+      onPress={() => handleQuestionPress(index)}
+      style={styles.questionItem}
+    >
+      <View style={styles.questionHeader}>
+        <Text>{item.content}</Text>
+        <Text style={styles.dateText}>{item.date}</Text>
+        <Text>{expandedIndex === index ? '🔽' : '▶️'}</Text>
+      </View>
+      {expandedIndex === index && (
+        <Text style={styles.questionDetail}>
+          {/* 여기서는 item.content를 사용해야 합니다. */}
+          {item.content}
+        </Text>
+      )}
+    </TouchableOpacity>
+  ))}
+</ScrollView>
       <TouchableOpacity
         style={styles.askButton}
         onPress={() => navigation.navigate('QnA')}

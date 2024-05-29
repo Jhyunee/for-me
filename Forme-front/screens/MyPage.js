@@ -2,37 +2,34 @@ import React, {useEffect, useState} from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, Modal } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'; 
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
 
 const MyPageScreen = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [monthlyEffort, setMonthlyEffort] = useState('30,000');
-
-
-  const fetchTesttestEndpoint = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-
-      const response = await fetch('http://172.30.1.86:8080/testtest', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`, // 여기에 AccessToken을 넣어주세요
-          'Content-Type': 'application/json'
+  const [userId, setUserId] = useState('');
+  
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (token !== null) {
+          // 토큰이 존재하는 경우에만 유저 정보를 가져옴
+          const decodedToken = jwtDecode(token);
+          setUserId(decodedToken.sub);
+          console.log(userId);
         }
-      });
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      } catch (error) {
+        console.error('Error fetching token:', error);
       }
+    };
   
-      const userId = await response.text();
-      console.log('User ID:', userId);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-  
-  
+    fetchToken();
+  }, []);
+
   
   const openModal = () => {
     setModalVisible(true);
@@ -52,7 +49,7 @@ const MyPageScreen = () => {
     try {
         console.log('Sending request with:', { userId, password }); // 요청 전 로그
 
-        const response = await axios.post('http://172.30.1.36:8080/login', {
+        const response = await axios.post('172.16.11.224:8080/login', {
             userId: userId,
             password: password,
         });
@@ -177,16 +174,13 @@ const MyPageScreen = () => {
 
       <View style={[styles.versionInfoContainer, { marginVertical: 40 }]}>
         <Text style={styles.versionInfo}>로그아웃</Text>
-        <TouchableOpacity style={styles.button} onPress={fetchTesttestEndpoint}>
-                <Text style={styles.buttonText}>토큰 확인</Text>
-            </TouchableOpacity>
       </View>
       <View style={[styles.versionInfoContainer, { marginVertical: 40 }]}>
         <Text style={styles.versionInfo}>버전 정보 1.1.1</Text>
       </View>
       <View style={styles.bottomContainer}>
         <View style={styles.bottomNavbar}>
-          <TouchableOpacity style={styles.bottomIcon}>
+          <TouchableOpacity style={styles.bottomIcon} onPress={() => navigation.navigate('Community')}>
             <Text>💬</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottomIcon}>
