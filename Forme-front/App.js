@@ -17,6 +17,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import CommunityScreen from './screens/CommunityScreen';
 import FindPasswordScreen from './screens/FindPasswordScreen';
 import FindIdScreen from './screens/FindIdScreen';
+import StatScreen from './screens/StatScreen'; //추가
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -43,6 +44,8 @@ export default function App() {
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />
         <Stack.Screen options={{ headerShown: false }} name="Community" component={CommunityScreen} />
+        <Stack.Screen options={{ headerShown: false }} name="Stat" component={StatScreen} />
+        {/* 추가 */}
       </Stack.Navigator>
     </NavigationContainer>
   );
