@@ -1,167 +1,261 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyboardAvoidingView, Alert, StyleSheet, Image, Text, View, TouchableOpacity, TextInput, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { useFonts } from 'expo-font';
+import { StatusBar } from 'expo-status-bar';
+import { jwtDecode } from "jwt-decode";
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation();
   const [oldPassword, configPassword] = useState('');
   const [newPassword, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [userId, setUserId] = useState(''); // State to store user ID
+
+  let [fontsLoaded] = useFonts({
+    'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
+    'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
+    'Inter-ExtraBoldItalic': require('../assets/fonts/Inter-ExtraBoldItalic.ttf')
+  });
+  if (!fontsLoaded) {
+    return <StatusBar />;
+  }
+
+  // id 출력을 위한 로직
+  useEffect(() => {
+    const getId = async () => {
+      try {
+        const AccessToken = await AsyncStorage.getItem('accessToken');
+        const decodedToken = jwtDecode(AccessToken);
+        console.log(decodedToken);
+        setUserId(decodedToken.sub);
+      } catch (error) {
+        console.error('Err', error);
+      }
+    };
+    getId();
+  }, []);
 
   const handleChangePassword = async() => {
-    const token = await AsyncStorage.getItem('accessToken');
+    const data = {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    }
 
-    if (newpassword !== confirmPassword) {
+    // 비밀번호 확인 로직
+    if (newPassword !== confirmPassword) {
       Alert.alert('에러 발생', '비밀번호 확인이 일치하지 않습니다.');
       return;
     }
-    
-    try{
-      console.log('Sending request with:', { oldPassword, newPassword });
 
-      const response = await axios.post('http://172.30.1.9:8080/api/mypage/password',{
-        token: token,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      })
-      .then(response => {
-        console.log('Password change request successful:', response.data);
-      })
-      .catch(error => {
-        console.error('Error changing password:', error);
+    try {
+      console.log('Sending request with:', { oldPassword, newPassword });
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+
+      const response = await axios.post('http://172.16.11.224:8080/api/mypage/password', data, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Refresh-Token': refreshToken
+        }
       });
-    } catch(error){
-      console.log("error", error);
+
+      // 비밀번호 변경 완료시 로그아웃
+      if (response.status === 200) {
+        Alert.alert('변경 완료', '비밀번호가 변경되었습니다. 다시 로그인해주세요.', [
+          { text: '확인', onPress: handleLogout }
+        ]);
+      } else {
+        console.log('error', response);
+      }
+    } catch (err) {
+      console.error('Network error:', err);
+      Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('로그아웃 도중 문제가 발생했습니다.', error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.navbar}>
-        <Text style={styles.forMe}>For Me</Text>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'android' ? 'height' : 'padding'}>
+      <View style={styles.logoContainer}>
+        <Text style={styles.MainLogo}>For Me</Text>
       </View>
-      <View style={styles.box}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.icon}>👤</Text>
-          <Text style={styles.userId}>아이디</Text>
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.inputContainer}>
-          <Text style={styles.icon}>🔒</Text>
+      <View style={styles.inputContainer}>
+        <View style={styles.inputWrapper1}>
+          <Image source={require('../assets/user.png')} style={styles.icon} />
           <TextInput
+            value={userId}
             style={styles.input}
-            placeholder="비밀번호"
-            placeholderTextColor="#808080" // 회색 placeholder
+            width='80%'
+            placeholderTextColor="#D1D1D1"
+            placeholderStyle={{ fontFamily: 'Pretendard-Regular' }}
+            editable={false} //수정 불가
+          />
+        </View>
+        <View style={styles.inputDivider} />
+        <View style={styles.inputWrapper2}>
+          <Image source={require('../assets/lock.png')} style={styles.icon} />
+          <TextInput
+            placeholder="기존 비밀번호"
+            onChangeText={text => configPassword(text)}
+            value={oldPassword}
+            style={styles.input}
+            width='80%'
+            placeholderTextColor="#D1D1D1"
+            placeholderStyle={{ fontFamily: 'Pretendard-Regular' }}
             secureTextEntry={true}
-            onChangeText={setPassword}
+          />
+        </View>
+        <View style={styles.inputDivider} />
+        <View style={styles.inputWrapper2}>
+          <Image source={require('../assets/lock.png')} style={styles.icon} />
+          <TextInput
+            placeholder="신규 비밀번호"
+            onChangeText={text => setPassword(text)}
             value={newPassword}
-          />
-        </View>
-        <View style={styles.separator} />
-         <View style={styles.inputContainer}>
-          <Text style={styles.icon}>🔒</Text>
-          <TextInput
             style={styles.input}
-            placeholder="비밀번호 확인"
-            placeholderTextColor="#808080" // 회색 placeholder
+            width='80%'
+            placeholderTextColor="#D1D1D1"
+            placeholderStyle={{ fontFamily: 'Pretendard-Regular' }}
             secureTextEntry={true}
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
           />
         </View>
-
+        <View style={styles.inputDivider} />
+        <View style={styles.inputWrapper3}>
+          <Image source={require('../assets/check.png')} style={styles.icon} />
+          <TextInput
+            placeholder="신규 비밀번호 확인"
+            onChangeText={text => setConfirmPassword(text)}
+            value={confirmPassword}
+            style={styles.input}
+            width='80%'
+            placeholderTextColor="#D1D1D1"
+            placeholderStyle={{ fontFamily: 'Pretendard-Regular' }}
+            secureTextEntry={true}
+          />
+        </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>비밀번호 변경</Text>
-      </TouchableOpacity>
-
-      <View style={styles.versionInfoContainer}>
-        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.navigate('Service')}>
-          <Text style={styles.customerService}>고객센터</Text>
-        </TouchableOpacity>
-        <Text style={styles.footerForMe}>For Me</Text>
+      <View style={styles.changeContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+                <Text style={styles.buttonText}>비밀번호 변경</Text>
+            </TouchableOpacity>
       </View>
-    </View>
+  
+      <View style={styles.bottomContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('Service')}>
+                <Text style={styles.MainButtonText}>고객센터</Text>
+            </TouchableOpacity>
+            <Text style={styles.LogoText}>For Me</Text>
+        </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    justifyContent: 'space-between',
-    paddingVertical: 20, 
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white'
   },
-  navbar: {
-    width: '100%',
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: '20%'
   },
-  forMe: {
-    fontWeight: 'bold',
-    color: '#508BFF',
-    fontSize: 25,
-  },
-  box: {
-    width: '80%',
-    alignSelf: 'center',
-    padding: 20,
-    backgroundColor: '#d3d3d3',
-    borderRadius: 10,
+  MainLogo: {
+    color: '#508bff',
+    fontFamily: 'Inter-ExtraBoldItalic',
+    fontSize: 40,
+    textAlign: 'center'
   },
   inputContainer: {
+    width: '70%'
+  },
+  inputWrapper1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E5E5E5',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10
+  },
+  inputDivider: {
+    backgroundColor: '#AAAAAA',
+    height: 1,
     width: '100%',
-    marginBottom: 10,
-    flexDirection: 'row', 
-    alignItems: 'center', 
   },
-  userId: {
-    flex: 1,
-    fontSize: 16,
-    color: '#696969',
-    textAlign: 'left'
+  inputWrapper2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E5E5E5',
   },
-  input: {
-    flex: 2, 
-    height: 40,
-    backgroundColor: '#d3d3d3',
-    color: '#696969', 
+  inputWrapper3: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E5E5E5',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10
   },
   icon: {
-    fontSize: 20,
-    marginRight: 10,
+    width: 20,
+    height: 20,
+    marginLeft: 15,
   },
-  separator: {
-    width: '100%',
-    height: 1,
-    backgroundColor: '#a9a9a9',
-    marginVertical: 10,
+  input: {
+    backgroundColor: '#E5E5E5',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginTop: 5,
+    marginLeft:     10,
+  },
+  changeContainer: {
+    width: '70%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 10
   },
   button: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: '#508BFF',
+    width: '100%',
     padding: 15,
-    borderRadius: 5,
-    width: '80%',
-    alignSelf: 'center',
+    borderRadius: 10,
     alignItems: 'center',
+    height: 50
   },
   buttonText: {
-    color: '#ffffff',
     fontSize: 16,
+    color: 'white',
+    fontFamily: 'Pretendard-Bold',
   },
-  versionInfoContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
+  bottomContainer: {
+    position: 'absolute',
+    bottom: '5%',
+    width: '100%',
   },
-  customerService: {
+  MainButtonText: {
     fontSize: 12,
-    color: '#D9D9D9',
+    color: '#D1D1D1',
+    marginTop: 30,
+    fontFamily: 'Pretendard-Bold',
+    textAlign: 'center'
   },
-  footerForMe: {
-    fontSize: 16,
-    color: '#D9D9D9',
-    marginTop: 10,
-  },
+  LogoText: {
+    fontSize: 20,
+    color: '#D1D1D1',
+    textAlign: 'center',
+    fontFamily: 'Inter-ExtraBoldItalic',
+  }
 });
 
 export default ChangePasswordScreen;

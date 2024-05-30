@@ -24,6 +24,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        {/* 연동 필요 -> 체크리스트 화면 */}
         <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} /> 
@@ -35,17 +36,22 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="FindId" component={FindIdScreen} />
         {/* 보류 */}
         <Stack.Screen options={{ headerShown: false }} name="Kakao" component={KakaoLogin} />
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Service" component={CustomerServiceScreen} />
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="QnA" component={AskQuestionScreen} />
         <Stack.Screen options={{ headerShown: false }} name="MyPage" component={MyPageScreen} />
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="ChangePassword" component={ChangePasswordScreen} />
+        {/* css 수정 완료, 연동 에러 -> 403 */}
         <Stack.Screen options={{ headerShown: false }} name="EditProfile" component={EditProfile} />
         <Stack.Screen options={{ headerShown: false }} name="Notice" component={NoticeScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />
+        {/* 연동 필요, CSS 개선 필요 */}
         <Stack.Screen options={{ headerShown: false }} name="Community" component={CommunityScreen} />
-        <Stack.Screen options={{ headerShown: false }} name="Stat" component={StatScreen} />
         {/* 추가 */}
+        <Stack.Screen options={{ headerShown: false }} name="Stat" component={StatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

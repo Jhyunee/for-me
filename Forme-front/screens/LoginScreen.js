@@ -77,16 +77,6 @@ const LoginScreen = () => {
             Alert.alert('Error', errorMessage);
         }
     };
-
-    const handleBackButton = () => {
-        if (isLoggedIn) {
-            // 로그인 상태일 때 뒤로가기 동작 방지
-            return true;
-        } else {
-            // 로그인 상태가 아닐 때 기본 동작 수행
-            return false;
-        }
-    };
     
     return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'android' ? 'height' : 'padding'}>
