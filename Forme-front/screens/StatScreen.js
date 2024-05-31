@@ -6,9 +6,9 @@ import notionIcon from "../assets/notion.png";
 import fireIcon from "../assets/fire.png";
 import Home from "../assets/home_off.svg";
 import StatOn from "../assets/stat_on.svg";
-import Comm from "../assets/comm_off.svg";
-import User from "../assets/user_off.svg";
-import Write from "../assets/write_off.svg";
+import Comm from "../assets/comm_off";
+import User from "../assets/user_off";
+import Write from "../assets/write_off";
 import { BarChart } from "react-native-gifted-charts";
 
 const StatScreen = () => {
