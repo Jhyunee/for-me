@@ -70,7 +70,7 @@ const SignUpScreen = () => {
         return;
       }
       console.log('Sending request with:', { userId, name, formattedPhoneNumber, email, formattedBirthDate, backendGender, password });
-      const response = await axios.post('http://172.16.11.224:8080/user', data);
+      const response = await axios.post('http://192.168.0.6:8080/user', data);
       //console.log('Received response:', response.data);
 
       // 회원가입 성공

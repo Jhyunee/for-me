@@ -34,7 +34,7 @@ const MainScreen = () => {
                 const refreshToken = await AsyncStorage.getItem('refreshToken'); // AsyncStorage에서 리프레시 토큰 값을 가져옴
 
                 if (refreshToken) {
-                    const refreshResponse = await fetch('http://10.0.2.2:8080/api/token', {
+                    const refreshResponse = await fetch('http://192.168.0.6:8080/api/token', {
                         method: 'POST',
                         headers: {
                             Authorization: 'Bearer ' + accessToken, 
@@ -62,7 +62,7 @@ const MainScreen = () => {
     
 
     const handleSubmit = async() => {
-        httpRequest('POST', 'http://10.0.2.2:8080/api/mypage/services', JSON.stringify({title : title, content: content,}));
+        httpRequest('POST', 'http://192.168.0.6:8080/api/mypage/services', JSON.stringify({title : title, content: content,}));
     }
 
 

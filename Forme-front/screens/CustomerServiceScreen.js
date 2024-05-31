@@ -26,7 +26,7 @@ const CustomerServiceScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://172.16.11.224:8080/api/mypage/services', {
+        const response = await axios.get('http://192.168.0.6:8080/api/mypage/services', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken

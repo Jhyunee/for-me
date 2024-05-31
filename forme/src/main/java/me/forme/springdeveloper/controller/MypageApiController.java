@@ -91,9 +91,6 @@ public class MypageApiController {
         else return ResponseEntity.badRequest().build();
     }
 
-
-    @GetMapping
-
     // 회원정보 수정
     @PatchMapping("/api/mypage/auth")
     public ResponseEntity<User> reauth(@RequestBody UpdateUserRequest request){

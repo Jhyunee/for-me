@@ -55,7 +55,7 @@ const ChangePasswordScreen = () => {
       const accessToken = await AsyncStorage.getItem('accessToken');
       const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-      const response = await axios.post('http://172.16.11.224:8080/api/mypage/password', data, {
+      const response = await axios.post('http://192.168.0.6:8080/api/mypage/password', data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Refresh-Token': refreshToken

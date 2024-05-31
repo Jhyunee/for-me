@@ -66,8 +66,8 @@ const EditProfileScreen = () => {
       const accessToken = await AsyncStorage.getItem('accessToken');
       const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-      console.log('Sending request with:', {name, formattedPhoneNumber, email, formattedBirthDate, backendGender, password });
-      const response = await axios.patch('http://172.16.11.224:8080/api/mypage/auth', data, {
+      console.log('Sending request with:', {name, formattedPhoneNumber, email, formattedBirthDate, backendGender});
+      const response = await axios.patch('http://192.168.0.6:8080/api/mypage/auth', data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Refresh-Token': refreshToken
@@ -75,7 +75,7 @@ const EditProfileScreen = () => {
     });
       console.log('Received response:', response.data);
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         Alert.alert('회원정보 수정 성공');
         navigation.navigate('MyPage');
       } else {

@@ -49,7 +49,7 @@ const MyPageScreen = () => {
     try {
         console.log('Sending request with:', { userId, password }); // 요청 전 로그
 
-        const response = await axios.post('172.16.11.224:8080/login', {
+        const response = await axios.post('192.168.0.6:8080/login', {
             userId: userId,
             password: password,
         });
