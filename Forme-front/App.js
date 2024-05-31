@@ -24,7 +24,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* 연동 필요 -> 체크리스트 화면 */}
+        {/* 추가 */}
         <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} /> 
@@ -40,11 +40,13 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="Service" component={CustomerServiceScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="QnA" component={AskQuestionScreen} />
+        {/* 1차 완 -> 노력금 수정 핸들러 로직 확인 후 수정 필 */}
         <Stack.Screen options={{ headerShown: false }} name="MyPage" component={MyPageScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="ChangePassword" component={ChangePasswordScreen} />
-        {/* css 수정 완료, 연동 에러 -> 403 */}
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="EditProfile" component={EditProfile} />
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Notice" component={NoticeScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />

@@ -138,19 +138,19 @@ const AskQuestionScreen = () => {
       </View>
       <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
           <SvgXml xml={HomeSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
           <SvgXml xml={StatSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Community')}>
           <SvgXml xml={CommSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} Community>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>

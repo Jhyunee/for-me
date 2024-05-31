@@ -10,7 +10,6 @@ import { SvgXml } from 'react-native-svg';
 
 const CustomerServiceScreen = () => {
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedIndex, setExpandedIndex] = useState(-1);
   const [questions, setQuestions] = useState([]);
@@ -26,7 +25,7 @@ const CustomerServiceScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://192.168.0.6:8080/api/mypage/services', {
+        const response = await axios.get('http://172.16.11.224:8080/api/mypage/services', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
@@ -192,19 +191,19 @@ const CustomerServiceScreen = () => {
       </View>
       <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
-          <TouchableOpacity style={styles.menuIcon}>
+        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
           <SvgXml xml={HomeSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
           <SvgXml xml={StatSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Community')}>
           <SvgXml xml={CommSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} Community>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>
@@ -339,6 +338,7 @@ const styles = StyleSheet.create({
   questionDetail: {
     marginTop: 10,
     color: '#818181',
+    fontFamily: 'Pretendard-Regular',
   },
   indexIcon: {
     width: 15,
