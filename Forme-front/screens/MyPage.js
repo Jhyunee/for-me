@@ -43,7 +43,7 @@ const MyPageScreen = () => {
         console.log(response.data);
         // null이나 undefined일 때 0으로 처리
         setAchieve(response.data.achieve?.achieve ?? 0);
-        setReward(response.data.reward ?? 0);
+        setReward(response.data.reward.reward ?? 0);
         setSaving(response.data.saved?.saving ?? 0);
         setUserId(response.data.userInfo?.userId ?? '');
         setUserName(response.data.userInfo?.name ?? '');
