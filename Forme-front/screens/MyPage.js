@@ -19,6 +19,7 @@ const MyPageScreen = () => {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [newReward, setNewReward] = useState('');
+  const [dailyReward, setDailyReward] = useState(0);
   const [fontsLoaded] = useFonts({
     'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
     'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
@@ -48,6 +49,12 @@ const MyPageScreen = () => {
         setUserId(response.data.userInfo?.userId ?? '');
         setUserName(response.data.userInfo?.name ?? '');
         setUserEmail(response.data.userInfo?.email ?? '');
+        
+        const currentDate = new Date();
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        // 이번 달 일수로 1일 노력금 계산
+        const calculatedDailyReward = Math.round(response.data.reward.reward / daysInMonth);
+        setDailyReward(calculatedDailyReward); // dailyReward 상태 업데이트
       } catch (error) {
         console.error('Error', error);
       }
@@ -190,7 +197,7 @@ const MyPageScreen = () => {
         </View>
         <View style={styles.userMoneyBox}>
           <Text style={styles.defaultText}>1일 노력금 :</Text>
-          <Text style={styles.defaultText}>{reward / 30}</Text>
+          <Text style={styles.defaultText}>{dailyReward}</Text>
           <Text style={styles.defaultText}>원</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={openModal}>
