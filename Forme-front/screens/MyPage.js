@@ -73,7 +73,7 @@ const MyPageScreen = () => {
       const refreshToken = await AsyncStorage.getItem('refreshToken');
 
       console.log('Sending request with:', {newReward});
-      const response = await axios.post('http://172.16.11.224:8080/api/mypage/money', data, {
+      const response = await axios.patch('http://172.16.11.224:8080/api/mypage/money', data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Refresh-Token': refreshToken
@@ -258,8 +258,7 @@ const MyPageScreen = () => {
               style={styles.input}
               onChangeText={setNewReward}
               placeholder={`${reward}`}
-              value={newReward}
-              keyboardType="numeric"
+              value={reward}
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
