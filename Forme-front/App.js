@@ -18,14 +18,17 @@ import CommunityScreen from './screens/CommunityScreen';
 import FindPasswordScreen from './screens/FindPasswordScreen';
 import FindIdScreen from './screens/FindIdScreen';
 import StatScreen from './screens/StatScreen'; //추가
+import MainScreenTest from './screens/MainScreen_test'; //추가
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* 추가 */}
+        {/* 모든 페이지 구현 완료시 삭제 예정 */}
         <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
+        {/* 추가 */}
+         <Stack.Screen options={{ headerShown: false }} name="MainT" component={MainScreenTest} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} /> 
         {/* 완료 */}

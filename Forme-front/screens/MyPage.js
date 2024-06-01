@@ -265,7 +265,7 @@ const MyPageScreen = () => {
               style={styles.input}
               onChangeText={setNewReward}
               placeholder={`${reward}`}
-              value={reward}
+              value={String(reward)}
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
