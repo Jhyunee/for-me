@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation();
@@ -51,11 +52,11 @@ const ChangePasswordScreen = () => {
     }
 
     try {
-      console.log('Sending request with:', { oldPassword, newPassword });
+      // console.log('Sending request with:', { oldPassword, newPassword });
       const accessToken = await AsyncStorage.getItem('accessToken');
       const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-      const response = await axios.post('http://192.168.0.6:8080/api/mypage/password', data, {
+      const response = await axios.post('http://172.16.11.224:8080/api/mypage/password', data, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Refresh-Token': refreshToken
