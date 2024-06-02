@@ -101,7 +101,7 @@ public class ChecklistService {
         // 3. 대상 삭제하기 (실제 테이블에서 삭제X, 삭제 날짜 설정)
         //checklistRepository.delete(target);
         target.delete(LocalDate.now());
-        return target;
+        return checklistRepository.save(target);
     }
 
 

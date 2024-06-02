@@ -70,7 +70,7 @@ public class ChecklistApiController {
     }
 
     //체크리스트 삭제
-    @DeleteMapping("/api/checklists/{id}")
+    @PatchMapping("/api/checklists/delete/{id}")
     public ResponseEntity<Checklist> delete(@PathVariable Long id) {
         // 각 체크리스트 공유의 id가 있기 때문에 user_id 불필요
         Checklist deleted = checklistService.delete(id);
