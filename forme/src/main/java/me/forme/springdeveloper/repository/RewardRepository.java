@@ -155,7 +155,6 @@ public interface RewardRepository extends JpaRepository<Reward, Long> {
             "AND MONTH(r.created_at) = MONTH(:inputDate) " +
             "AND YEAR(u.birth) BETWEEN YEAR(:birth) - 2 AND YEAR(:birth) + 2 " , nativeQuery = true)
     Long findByAgeReward(@Param("inputDate") LocalDate inputDate, @Param("birth") LocalDate birth);
-
     @Query(value = "SELECT AVG(r.reward) " +
             "FROM Users u LEFT JOIN Reward r " +
             "ON u.user_id = r.user_id " +

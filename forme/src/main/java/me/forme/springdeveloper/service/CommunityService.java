@@ -56,12 +56,18 @@ public class CommunityService {
         // 또래
         LocalDate birth = userRepository.findByUserId(userId).get().getBirth();
         Long ageReward = rewardRepository.findByAgeReward(localDate, birth);
-        map.put("age", ageReward);
+        if (ageReward == null) {
+            ageReward = 0L;
+        }
+        map.put("ageReward", ageReward);
 
         // 같은 성별
         String gender = userRepository.findByUserId(userId).get().getGender();
         Long genderReward = rewardRepository.findByGenderReward(localDate, gender);
-        map.put("gender", genderReward);
+        if (genderReward == null) {
+            genderReward = 0L;
+        }
+        map.put("genderReward", genderReward);
 
         // 나의 노력금
         Reward myReward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate);
@@ -84,15 +90,24 @@ public class CommunityService {
         // 또래
         LocalDate birth = userRepository.findByUserId(userId).get().getBirth();
         Double ageAchieve = customQueryRepository.findDailyAchieveByAge(birth, localDate);
-        map.put("age", ageAchieve);
+        if(ageAchieve == null) {
+            ageAchieve = 0D;
+        }
+        map.put("ageAchieve", ageAchieve);
 
         // 같은 성별
         String gender = userRepository.findByUserId(userId).get().getGender();
         Double genAchieve = customQueryRepository.findDailyAchieveByGender(gender, localDate);
-        map.put("gender", genAchieve);
+        if (genAchieve == null) {
+            genAchieve = 0D;
+        }
+        map.put("genAchieve", genAchieve);
 
         // 나의 노력금
         Double myAchieve = customQueryRepository.findDailyAchieveByUserId(userId, localDate);
+        if(myAchieve == null) {
+            myAchieve = 0D;
+        }
         map.put("myAchieve", myAchieve);
 
         return map;
