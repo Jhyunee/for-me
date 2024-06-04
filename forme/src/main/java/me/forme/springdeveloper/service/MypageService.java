@@ -49,7 +49,12 @@ public class MypageService {
     public Map<String, Long> getSaved(String userId){
         Map<String, Long> map = new HashMap<>();
         Long saved = rewardRepository.findSavedByUserIdAndDate(userId, localDate);
-        map.put("saving", saved);
+        if(saved != null) {
+            map.put("saving", saved);
+        }
+        else {
+            map.put("saving", 0L);
+        }
         return map;
     }
 
@@ -73,8 +78,10 @@ public class MypageService {
         Reward reward = rewardRepository.findByUserIdAndCreatedAt(userId, localDate);
         if(reward != null) {
             map.put("reward", reward.getReward());
-            return map;
         }
-        else return null;
+        else {
+            map.put("reward", 0L);
+        }
+        return map;
     }
 }
