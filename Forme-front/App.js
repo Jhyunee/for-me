@@ -43,7 +43,7 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="Service" component={CustomerServiceScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="QnA" component={AskQuestionScreen} />
-        {/* 1차 완 -> 노력금 수정 핸들러 로직 확인 후 수정 필 */}
+        {/* 완료*/}
         <Stack.Screen options={{ headerShown: false }} name="MyPage" component={MyPageScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="ChangePassword" component={ChangePasswordScreen} />
@@ -53,7 +53,7 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="Notice" component={NoticeScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />
-        {/* 연동 필요, CSS 개선 필요 */}
+        {/* 연동 정보에 따른 페이지 출력 변경 필요 */}
         <Stack.Screen options={{ headerShown: false }} name="Community" component={CommunityScreen} />
         {/* 추가 */}
         <Stack.Screen options={{ headerShown: false }} name="Stat" component={StatScreen} />

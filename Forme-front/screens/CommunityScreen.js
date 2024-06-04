@@ -27,7 +27,7 @@ const CommunityScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://172.16.11.224:8080/community', {
+        const response = await axios.get('http://172.16.136.88:8080/community', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
@@ -221,13 +221,15 @@ const CommunityScreen = () => {
             <Text style={styles.defaultText}>또래 유저들보다</Text>
             <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
             <View style={styles.compareWrapper1}>
+                <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyB.png')} style={styles.compareIcon}/>
+                <Text style={styles.worseBox}></Text>
                 <Text style={styles.defaultText}>또래</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyS.png')} style={styles.compareIcon}/>
+                <Text style={styles.betterBox}></Text>
                 <Text style={styles.defaultText}>나</Text>
+                </View>
                 </View>
               </View>
           </View>
@@ -235,13 +237,15 @@ const CommunityScreen = () => {
           <Text style={styles.defaultText}>여성 유저들보다</Text>
             <Text style={styles.defaultText}>달성률이 낮아요</Text>
             <View style={styles.compareWrapper1}>
+            <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyB.png')} style={styles.compareIcon}/>
-                <Text style={styles.defaultText}>또래</Text>
+                <Text style={styles.worseBox}></Text>
+                <Text style={styles.defaultText}>나</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyS.png')} style={styles.compareIcon}/>
-                <Text style={styles.defaultText}>나</Text>
+                <Text style={styles.betterBox}></Text>
+                <Text style={styles.defaultText}>또래</Text>
+                </View>
                 </View>
               </View>
           </View>
@@ -446,6 +450,7 @@ const styles = StyleSheet.create({
   defaultCompareContainer: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 15,
     margin: 5,
     backgroundColor:'#EEEEEE',
@@ -480,6 +485,12 @@ const styles = StyleSheet.create({
   compareWrapper2: {
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compareWrapper3: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    backgroundColor: 'orange'
   },
   compareIcon: {
     width: 40,
@@ -518,6 +529,19 @@ const styles = StyleSheet.create({
   menuIcon: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  betterBox: {
+    width: 20,
+    height: 35,
+    backgroundColor: '#508BFF',
+    borderRadius: 5,
+    marginHorizontal: 10
+  },
+  worseBox: {
+    width:20,
+    height: 25,
+    backgroundColor: '#D1D1D1',
+    borderRadius: 5
   },
 });
 
