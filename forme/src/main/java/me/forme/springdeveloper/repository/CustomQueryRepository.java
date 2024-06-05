@@ -172,6 +172,7 @@ public interface CustomQueryRepository extends JpaRepository<Checklist, Long> {
             "  AND T2.USER_ID = T3.USER_ID " +
             "  AND T3.CHECKLIST_ID = T4.ID " +
             "  AND T3.USER_ID = :userId " +
+            "AND T1.WK = WEEK(SYSDATE())" +
             "GROUP BY T1.WK, T2.USER_ID, T4.CATEGORY " +
             "ORDER BY WK, CATEGORY_COUNT DESC", nativeQuery = true)
     List<Object[]> findWeeklyCategoryStatsByUserId(@Param("userId") String userId);
@@ -200,6 +201,7 @@ public interface CustomQueryRepository extends JpaRepository<Checklist, Long> {
             "  AND T2.USER_ID = T3.USER_ID " +
             "  AND T3.CHECKLIST_ID = T4.ID " +
             "  AND T3.USER_ID = :userId " +
+            "AND T1.MM = MONTH(SYSDATE())" +
             "GROUP BY T1.MM, T2.USER_ID, T4.CATEGORY " +
             "ORDER BY MM, CATEGORY_COUNT DESC", nativeQuery = true)
     List<Object[]> findMonthlyCategoryStatsByUserId(@Param("userId") String userId);
@@ -229,6 +231,7 @@ public interface CustomQueryRepository extends JpaRepository<Checklist, Long> {
             "  AND T2.USER_ID = T3.USER_ID " +
             "  AND T3.CHECKLIST_ID = T4.ID " +
             "  AND T3.USER_ID = :userId " +
+            "AND T1.YY = YEAR(SYSDATE())" +
             "GROUP BY T1.YY, T2.USER_ID, T4.CATEGORY " +
             "ORDER BY YY, CATEGORY_COUNT DESC", nativeQuery = true)
     List<Object[]> findYearlyCategoryStatsByUserId(@Param("userId") String userId);
