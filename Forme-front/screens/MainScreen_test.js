@@ -6,13 +6,13 @@ import notionIcon from '../assets/notion.png';
 import fireIcon from '../assets/fire.png';
 import CalendarButton from '../components/CalendarButton';
 import TodoItemList from '../components/TodoItemList';
-import HomeOn from '../assets/home_on';
-import HomeOff from '../assets/home_off';
+import HomeOn from '../assets/home_on.svg';
+import HomeOff from '../assets/home_off.svg';
 import Stat from '../assets/stat_off.svg';
-import Comm from '../assets/comm_off';
-import UserOff from '../assets/user_off';
-import WriteOff from "../assets/write_off";
-import WriteOn from "../assets/write_on";
+import Comm from '../assets/comm_off.svg';
+import UserOff from '../assets/user_off.svg';
+import WriteOff from "../assets/write_off.svg";
+import WriteOn from "../assets/write_on.svg";
 import InputIcon from '../assets/input.svg'
 
 

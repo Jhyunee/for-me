@@ -11,7 +11,17 @@ import HorizontalLine from '../components/HorizontalLine';;
 const CommunityScreen = () => {
   const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [data, setData] = useState([]);
+  const [ageAchieve, setAgeAchieve] = useState('');
+  const [genAchieve, setGenAchieve] = useState('');
+  const [myAchieve, setMyAchieve] = useState('');
+  const [checklist, setChecklist] = useState([]);
+  const [monthlyReward, setMonthlyReward] = useState([]);
+  const [ageReward, setAgeReward] = useState('');
+  const [genderReward, setGenderReward] = useState('');
+  const [myReward, setMyReward] = useState('');
+  const [sortedChecklist, setSortedChecklist] = useState([]);
+  const [gender, setGender] = useState('');
+  const [genderData, setgenderData] = useState('');
   const [fontsLoaded] = useFonts({
     'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
     'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
@@ -27,13 +37,32 @@ const CommunityScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://172.16.136.88:8080/community', {
+        const response = await axios.get('http://172.30.1.61:8080/community', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
           }
         });
-        console.log(response.data);
+        // console.log(response.data);
+        setAgeAchieve(response.data.achieve.ageAchieve ?? 0);
+        setGenAchieve(response.data.achieve.genAchieve ?? 0);
+        setMyAchieve(response.data.achieve.myAchieve ?? 0);
+        setChecklist(response.data.checklist ?? {});
+        setMonthlyReward(response.data.monthlyReward ?? []);
+        setAgeReward(response.data.reward.ageReward ?? 0);
+        setGenderReward(response.data.reward.genderReward ?? 0);
+        setMyReward(response.data.reward.myReward ?? 0);
+        setGender(response.data.achieve.myGender?? 0);
+        const sortedChecklist = Object.entries(response.data.checklist).sort(([key1], [key2]) => Number(key1) - Number(key2)).map(([key, value]) => value);
+        setSortedChecklist(sortedChecklist);
+
+        if(response.data.achieve.myGender === 'f'){
+          setgenderData('여성');
+        }
+        else{
+          setgenderData('남성');
+        }
+
       } catch (error) {
         console.error('Error', error);
       }
@@ -41,16 +70,8 @@ const CommunityScreen = () => {
     fetchData();
   }, []);
 
-  const data = [
-    { amount: '6000원', date: '2024년 01월' },
-    { amount: '7000원', date: '2024년 02월' },
-    { amount: '8000원', date: '2024년 03월' },
-    { amount: '9000원', date: '2024년 04월' },
-    { amount: '10000원', date: '2024년 05월' },
-  ];
-
   const handleNext = () => {
-    if (currentIndex + 3 < data.length) {
+    if (currentIndex + 3 < monthlyReward.length) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -136,13 +157,13 @@ const CommunityScreen = () => {
             <Text style={styles.listInfoFont}>다른 유저들은 어떤 체크리스트를 작성할까요?</Text>
             <Text style={styles.defaultText}>(랜덤한 유저들의 체크리스트 3개를 보여드려요)</Text>
             <View style={styles.randomContainer}>
-              <Text style={styles.defaultText}>뽀미 산책 시켜주기</Text>
+              <Text style={styles.defaultText}>{sortedChecklist[0]}</Text>
             </View>
             <View style={styles.randomContainer}>
-              <Text style={styles.defaultText}>3분동안 양치질 하기</Text>
+              <Text style={styles.defaultText}>{sortedChecklist[1]}</Text>
             </View>
             <View style={styles.randomContainer}>
-              <Text style={styles.defaultText}>장씨 할아버지랑 조깅</Text>
+              <Text style={styles.defaultText}>{sortedChecklist[2]}</Text>
             </View>
           </View>
           
@@ -154,13 +175,13 @@ const CommunityScreen = () => {
               </TouchableOpacity>
               <View style={styles.moneyWrapper}>
                 <FlatList
-                  data={data.slice(currentIndex, currentIndex + 3)}
+                  data={monthlyReward.slice(currentIndex, currentIndex + 3)}
                   keyExtractor={(item, index) => index.toString()}
                   horizontal
                   renderItem={({ item }) => (
                     <View style={styles.moneyContainer}>
-                      <Text style={styles.rewardText}>{item.amount}</Text>
-                      <Text style={styles.dateText}>{item.date}</Text>
+                      <Text style={styles.rewardText}>{item.monthly_reward}</Text>
+                      <Text style={styles.dateText}>{item.dateid}월</Text>
                     </View>
                   )}
                   scrollEnabled={true}
@@ -182,34 +203,62 @@ const CommunityScreen = () => {
           <View style={styles.compareContainer}>
             <View style={styles.blueCompareContainer}>
               <Text style={styles.defaultText}>또래 유저들보다</Text>
-              <Text style={styles.defaultText}> 40% 많아요</Text>
+              {ageReward > myReward ? (
+                    <Text style={styles.defaultText}>노력금이 적어요</Text>
+                  ) : (
+                    <Text style={styles.defaultText}>노력금이 많아요</Text>
+                  )}
               <View style={styles.compareWrapper1}>
-                <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyB.png')} style={styles.compareIcon}/>
+              <View style={styles.compareWrapper2}>
+              {ageReward > myReward ? (
+                    <Image source={require('../assets/pigB.png')} style={styles.compareIcon}/>
+                  ) : (
+                    <Image source={require('../assets/pigS.png')} style={styles.compareIcon}/>
+                  )}
+                <Text style={styles.defaultText}>{ageReward}</Text>
                 <Text style={styles.defaultText}>또래</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/moneyS.png')} style={styles.compareIcon}/>
+                {ageReward > myReward ? (
+                    <Image source={require('../assets/pigS.png')} style={styles.compareIcon}/>
+                  ) : (
+                    <Image source={require('../assets/pigB.png')} style={styles.compareIcon}/>
+                  )}
+                <Text style={styles.defaultText}>{myReward}</Text>
                 <Text style={styles.defaultText}>나</Text>
                 </View>
               </View>
             </View>
             <View style={styles.defaultCompareContainer}>
-            <Text style={styles.defaultText}>여성 유저들보다</Text>
-            <Text style={styles.defaultText}> 40% 적어요</Text>
+            <Text style={styles.defaultText}>{genderData} 유저들보다</Text>
+            {genderReward > myReward ? (
+                    <Text style={styles.defaultText}>노력금이 적어요</Text>
+                  ) : (
+                    <Text style={styles.defaultText}>노력금이 많아요</Text>
+                  )}
             <View style={styles.compareWrapper1}>
             <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/pigB.png')} style={styles.compareIcon}/>
-                <Text style={styles.defaultText}>또래</Text>
+              {genderReward > myReward ? (
+                    <Image source={require('../assets/pigB.png')} style={styles.compareIcon}/>
+                  ) : (
+                    <Image source={require('../assets/pigS.png')} style={styles.compareIcon}/>
+                  )}
+                <Text style={styles.defaultText}>{genderReward}</Text>
+                <Text style={styles.defaultText}>{genderData}</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Image source={require('../assets/pigS.png')} style={styles.compareIcon}/>
+                {genderReward > myReward ? (
+                    <Image source={require('../assets/pigS.png')} style={styles.compareIcon}/>
+                  ) : (
+                    <Image source={require('../assets/pigB.png')} style={styles.compareIcon}/>
+                  )}
+                <Text style={styles.defaultText}>{myReward}</Text>
                 <Text style={styles.defaultText}>나</Text>
                 </View>
               </View>
             </View>
           </View>
-
+        <Text>{"\n"}</Text>
         <View style={styles.fontContainer}>
           <Text style={styles.bigFont}>다른 유저들과</Text>
           <Text style={styles.bigFont}>달성률을 비교해보세요</Text>
@@ -219,35 +268,63 @@ const CommunityScreen = () => {
         <View style={styles.compareContainer}>
           <View style={styles.blueCompareContainer}>
             <Text style={styles.defaultText}>또래 유저들보다</Text>
-            <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
+            {ageAchieve > myAchieve ? (
+                    <Text style={styles.defaultText}>달성률이 낮아요</Text>
+                  ) : (
+                    <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
+                  )}
             <View style={styles.compareWrapper1}>
                 <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                <Text style={styles.worseBox}></Text>
-                <Text style={styles.defaultText}>또래</Text>
+                  {ageAchieve > myAchieve ? (
+                    <View style={[styles.worseBox, {height: 35}]}></View>
+                  ) : (
+                    <View style={[styles.worseBox, {height: 25}]}></View>
+                  )}
+                  <Text style={styles.defaultText}>{ageAchieve}</Text>
+                  <Text style={styles.defaultText}>또래</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Text style={styles.betterBox}></Text>
-                <Text style={styles.defaultText}>나</Text>
+                  {ageAchieve > myAchieve ? (
+                    <View style={[styles.betterBox, {height: 25}]}></View>
+                  ) : (
+                    <View style={[styles.betterBox, {height: 35}]}></View>
+                  )}
+                  <Text style={styles.defaultText}>{myAchieve}</Text>
+                  <Text style={styles.defaultText}>나</Text>
                 </View>
                 </View>
               </View>
           </View>
           <View style={styles.defaultCompareContainer}>
-          <Text style={styles.defaultText}>여성 유저들보다</Text>
-            <Text style={styles.defaultText}>달성률이 낮아요</Text>
+          <Text style={styles.defaultText}>{genderData} 유저들보다</Text>
+          {genAchieve > myAchieve ? (
+                    <Text style={styles.defaultText}>달성률이 낮아요</Text>
+                  ) : (
+                    <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
+                  )}
             <View style={styles.compareWrapper1}>
             <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                <Text style={styles.worseBox}></Text>
-                <Text style={styles.defaultText}>나</Text>
+                  {genAchieve > myAchieve ? (
+                    <View style={[styles.worseBox, {height: 35}]}></View>
+                  ) : (
+                    <View style={[styles.worseBox, {height: 25}]}></View>
+                  )}
+                  <Text style={styles.defaultText}>{genAchieve}</Text>
+                  <Text style={styles.defaultText}>{genderData}</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                <Text style={styles.betterBox}></Text>
-                <Text style={styles.defaultText}>또래</Text>
+                  {genAchieve > myAchieve ? (
+                    <View style={[styles.betterBox, {height: 25}]}></View>
+                  ) : (
+                    <View style={[styles.betterBox, {height: 35}]}></View>
+                  )}
+                  <Text style={styles.defaultText}>{myAchieve}</Text>
+                  <Text style={styles.defaultText}>나</Text>
                 </View>
-                </View>
-              </View>
+            </View>
+            </View>
           </View>
         </View>
         
@@ -451,28 +528,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 15,
+    marginTop: 40,
+    marginBottom: 10,
     margin: 5,
     backgroundColor:'#EEEEEE',
-    height: '100%',
-    borderRadius: 15,
-  },
-  pinkCompareContainer: {
-    flex: 1,
-    marginTop: 15,
-    alignItems: 'center',
-    margin: 5,
-    backgroundColor:'#FFDBDB',
-    height: '100%',
+    height: 140,
     borderRadius: 15,
   },
   blueCompareContainer: {
     flex: 1,
-    marginTop: 15,
+    marginTop: 40,
+    marginBottom: 10,
     alignItems: 'center',
+    justifyContent: 'center',
     margin: 5,
     backgroundColor:'#97BAFF',
-    height: '100%',
+    height: 140,
     borderRadius: 15,
   },
   compareWrapper1: {
@@ -490,7 +561,6 @@ const styles = StyleSheet.create({
   compareWrapper3: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    backgroundColor: 'orange'
   },
   compareIcon: {
     width: 40,

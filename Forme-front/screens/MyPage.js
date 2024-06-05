@@ -35,13 +35,13 @@ const MyPageScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://172.16.136.88:8080/mypage', {
+        const response = await axios.get('http://172.30.1.61:8080/mypage', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
           }
         });
-        console.log(response.data);
+        // console.log(response.data);
         // null이나 undefined일 때 0으로 처리
         setAchieve(response.data.achieve?.achieve ?? 0);
         setReward(response.data.reward.reward ?? 0);

@@ -84,8 +84,8 @@ public class CommunityService {
     }
 
     // 다른 유저들과의 달성율 비교 (또래 | 같은성별)
-    public Map<String, Double> getAchieve(String userId) {
-        Map<String, Double> map = new HashMap<>();
+    public Map<String, Object> getAchieve(String userId) {
+        Map<String, Object> map = new HashMap<>();
 
         // 또래
         LocalDate birth = userRepository.findByUserId(userId).get().getBirth();
@@ -97,6 +97,7 @@ public class CommunityService {
 
         // 같은 성별
         String gender = userRepository.findByUserId(userId).get().getGender();
+        map.put("myGender", gender);
         Double genAchieve = customQueryRepository.findDailyAchieveByGender(gender, localDate);
         if (genAchieve == null) {
             genAchieve = 0D;

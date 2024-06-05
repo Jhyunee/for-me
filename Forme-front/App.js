@@ -53,7 +53,7 @@ export default function App() {
         <Stack.Screen options={{ headerShown: false }} name="Notice" component={NoticeScreen} />
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="SignUp" component={SignUpScreen} />
-        {/* 연동 정보에 따른 페이지 출력 변경 필요 */}
+        {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Community" component={CommunityScreen} />
         {/* 추가 */}
         <Stack.Screen options={{ headerShown: false }} name="Stat" component={StatScreen} />
