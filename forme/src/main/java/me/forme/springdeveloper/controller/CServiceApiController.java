@@ -33,7 +33,7 @@ public class CServiceApiController {
     }
 
     // 고객센터 글 (1개) 조회
-    @GetMapping("/api/mypage/services")
+    @GetMapping("/api/mypage/services/one")
     public ResponseEntity<CServiceResponse> findService(@RequestParam long id) {
         CService service = cServiceService.findById(id);
 

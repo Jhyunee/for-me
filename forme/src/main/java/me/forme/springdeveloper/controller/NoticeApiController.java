@@ -30,7 +30,7 @@ public class NoticeApiController {
     }
 
     // 공지글 하나만 조회
-    @GetMapping("/api/mypage/notices")
+    @GetMapping("/api/mypage/notices/one")
     public ResponseEntity<NoticeResponse> findNotice(@RequestParam long id) {
         Notice notice = noticeService.findById(id);
         return ResponseEntity.ok()
