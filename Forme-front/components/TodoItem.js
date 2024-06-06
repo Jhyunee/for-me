@@ -1,13 +1,20 @@
 import { Pressable, StyleSheet, Text, TextInput, View, Alert, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu'
 import { SvgXml } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'; 
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
 
 const TodoItem = ({ todoItem, todoList, setTodoList, category }) => {
   const [ edited, setEdited ] = useState(false);
+  const [userId, setUserId] = useState('');
   const [ newTodo, setNewTodo] = useState(todoItem.todo);
   const editInputRef = useRef(null);
   const [ categoryLabel, setCategoryLabel ] = useState(null);
+  const navigation = useNavigation();
 
   const Checkbox = `
   <svg width="30px" height="30px" viewBox="0 0 24 24" fill='white' xmlns="http://www.w3.org/2000/svg">
@@ -39,22 +46,79 @@ const TodoItem = ({ todoItem, todoList, setTodoList, category }) => {
     setEdited(true);
   }
 
-  const onChangeCheckbox = () => {
-    const nextTodoList = todoList.map((item) => ({
-      ...item,
-      // id 값이 같은 항목의 checked 값을 Toggle 함
-      checked: item.id === todoItem.id ? !item.checked : item.checked,
-    }));
+  const onChangeCheckbox = async() => {
 
-    setTodoList(nextTodoList);
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const decodedToken = jwtDecode(accessToken);
+      setUserId(decodedToken.sub);
+      const id = todoItem.id;
+      const date = new Date().toISOString().split('T')[0];
+      const data = {
+        checklistId: id,
+        user_id: userId,
+        done_date: date
+      };
+      const response = await axios.patch('http://172.16.11.224:8080/api/checklists/check', data, {
+                  headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Refresh-Token': refreshToken
+                  }
+                });
+                if (response.status === 204) {
+                  navigation.navigate('MainT');
+                } else {
+                  console.log('error', response);
+                }
+              } catch (err) {
+                console.error('Network error:', err);
+                Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
+              }
+    
   };
 
-  const onClickSubmitButton = () => {
-    const nextTodoList = todoList.map((item) => ({
-     ...item,
-      todo: item.id === todoItem.id ? newTodo : item.todo, // 새로운 아이템 내용을 넣어줌
-    }));
-    setTodoList(nextTodoList); // 새로운 리스트를 넣어줌
+  const onClickSubmitButton = async () => {
+    //const nextTodoList = todoList.map((item) => ({
+    // ...item,
+    //  todo: item.id === todoItem.id ? newTodo : item.todo, // 새로운 아이템 내용을 넣어줌
+   // }));
+  //  setTodoList(nextTodoList); // 새로운 리스트를 넣어줌
+  try {
+    //console.log('Sending request with:', { newTodo,userId });
+    const params = {
+      todoId: todoItem.id,
+    };
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    const decodedToken = jwtDecode(accessToken);
+    setUserId(decodedToken.sub);
+    const id = todoItem.id;
+    const data = {
+      name: newTodo,
+      user_id: userId
+    };
+    console.log(id,data);
+    Alert.alert('수정된 카테고리 자동 선정 중', '작업에 시간이 조금 걸립니다. 10초 뒤에 다시 메인 화면을 확인해주세요!');
+    const response = await axios.patch('http://172.16.11.224:8080/api/checklists', data, {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Refresh-Token': refreshToken
+                },
+                params: {
+                  id
+                }
+              });
+              if (response.status === 200) {
+                console.log("수정완");
+              } else {
+                console.log('error', response);
+              }
+            } catch (err) {
+              console.error('Network error:', err);
+              Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
+            }
+    
     setEdited(false); // 수정모드를 다시 읽기 모드로 변경
   };
 
@@ -69,9 +133,30 @@ const TodoItem = ({ todoItem, todoList, setTodoList, category }) => {
         },
         {
           text: '삭제',
-          onPress: () => {
-            const nextTodoList = todoList.filter((item) => item.id !== todoItem.id);
-            setTodoList(nextTodoList);
+          onPress: async () => {
+            try {
+              //console.log('Sending request with:', { newTodo,userId });
+              const accessToken = await AsyncStorage.getItem('accessToken');
+              const refreshToken = await AsyncStorage.getItem('refreshToken');
+              const id = todoItem.id;
+              const response = await axios.patch('http://172.16.11.224:8080/api/checklists/delete', {},{
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Refresh-Token': refreshToken
+                },
+                params: {
+                  id
+                }
+              });
+              if (response.status === 204) {
+                Alert.alert('삭제 완료', '삭제가 완료되었습니다. 새로고침을 해주세요');
+              } else {
+                console.log('error', response);
+              }
+            } catch (err) {
+              console.error('Network error:', err);
+              Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
+            }
           },
           style: 'destructive'
         }
@@ -84,6 +169,14 @@ const TodoItem = ({ todoItem, todoList, setTodoList, category }) => {
     if (edited && editInputRef.current) {
       editInputRef.current.focus();
     }
+    const fetchData = async () => {
+          const accessToken = await AsyncStorage.getItem('accessToken');
+          const refreshToken = await AsyncStorage.getItem('refreshToken');
+          const decodedToken = jwtDecode(accessToken);
+          setUserId(decodedToken.sub);
+  };
+
+  fetchData();
   }, [edited]);
 
   const Divider = () => <View style={styles.divider} />;
@@ -97,9 +190,9 @@ const TodoItem = ({ todoItem, todoList, setTodoList, category }) => {
         <View style={styles.editInputContainer}>
           <TextInput
             style={styles.editInput}
-            value={newTodo}
-            onChangeText={setNewTodo}
-            ref={editInputRef}
+
+            onChangeText={text => setNewTodo(text)}
+            placeholder='수정할 목표를 입력해주세요'
           />
         </View>
       ) : (

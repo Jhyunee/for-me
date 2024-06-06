@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, Modal, Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { LogBox, Alert, Modal, Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -9,10 +9,16 @@ import TodoItemList from '../components/TodoItemList';
 import HorizontalLine from '../components/HorizontalLine';
 import axios from 'axios'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
+
+LogBox.ignoreAllLogs();//오류 무시
 
 const MainScreen_test = () => {
     const [todoData, setTodoData] = useState({ done: [], notDone: [] });
     const [ todoList, setTodoList ] = useState([]);
+    const [newTodo, setNewTodo] =useState('');
+    const [userId, setUserId] = useState('');
     const [ modalVisible, setModalVisible ] = useState(false);
     const [ todo, setTodo ] = useState('');
     const [ selectedDate, setSelectedDate ] = useState(null);
@@ -32,15 +38,45 @@ const MainScreen_test = () => {
         setTodo(newTodo);
     };
 
-    const onPressAdd = () => {
-        if (todo.trim() === ''){ // 입력값이 없으면 아무 동작도 하지 않음
+    const onPressAdd = async () => {
+        const data = {
+            name:newTodo,
+            user_id: userId
+          }
+
+        if (!newTodo.trim()) {
+            Alert.alert('내용 필수', '목표를 입력해주세요.');
+            setModalVisible(false);
             return;
         }
 
-        const NewTodoList = [...todoList, { id: todoList.length, todo, checked: false, delete: false }];
-        setTodoList(NewTodoList);
+        try {
+            //console.log('Sending request with:', { newTodo,userId });
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        setTodo(''); // 입력값 초기화
+            Alert.alert('카테고리 자동 선정 중', '작업에 시간이 조금 걸립니다. 10초 뒤에 다시 메인 화면을 확인해주세요!');
+            setModalVisible(false);
+      
+            const response = await axios.post('http://172.16.11.224:8080/api/checklists', data, {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Refresh-Token': refreshToken
+              }
+            });
+      
+            if (response.status === 201) {
+              console.log(response.data);
+            } else {
+              console.log('error', response);
+            }
+          } catch (err) {
+            console.error('Network error:', err);
+            Alert.alert('네트워크 오류', '네트워크 연결에 문제가 있습니다. 다시 시도해주세요.');
+          }
+
+        
+        setNewTodo(''); // 입력값 초기화
         if(inputRef.current){
         inputRef.current.clear(); // 입력창 내용 비우기
         inputRef.current.focus();
@@ -88,8 +124,11 @@ const MainScreen_test = () => {
             try {
                 const selectedDate = new Date().toISOString().split('T')[0];
                 const select_date = selectedDate;
+                console.log(select_date);
                 const accessToken = await AsyncStorage.getItem('accessToken');
                 const refreshToken = await AsyncStorage.getItem('refreshToken');
+                const decodedToken = jwtDecode(accessToken);
+                setUserId(decodedToken.sub);
                 const response = await axios.get('http://172.16.11.224:8080/api/home', {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -99,12 +138,12 @@ const MainScreen_test = () => {
                         select_date
                     }
                 });
-                console.log(response.data);
+                // console.log(response.data);
                 setTodoData(response.data);
-                // const todos = Array.from(response.data.notDone, item => item.name);
+                const todos = Array.from(response.data.notDone, item => item.name);
+                console.log(response.data.notDone);
                 const uniqueCategories = [...new Set(response.data.notDone.map(item => item.category))]
                 setCategories(uniqueCategories);
-                console.log(response.data.notDone.filter(item => item.category === '일상'))
             } catch (error) {
                 console.error('Error', error);
             }
@@ -210,9 +249,9 @@ const MainScreen_test = () => {
                             <View style={styles.modalInput}>
                             <TextInput
                             style={styles.input}
-                            value={todo}
+                            value={newTodo}
                             ref={inputRef}
-                            onChangeText={onTodoInput}
+                            onChangeText={text => setNewTodo(text)}
                             placeholder="목표 이름을 입력하세요"
                         />
                            <SvgXml xml={InputIcon} onPress={onPressAdd} />
@@ -336,7 +375,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)' 
+        backgroundColor: 'rgba(0, 0, 0, 0.3)' 
     },
     modalContent: {
         backgroundColor: 'white',
@@ -347,7 +386,8 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 18,
-        marginBottom: 10
+        marginBottom: 10,
+        fontFamily: 'Pretendard-Bold'
     },
     modalInput: {
         flexDirection: 'row',

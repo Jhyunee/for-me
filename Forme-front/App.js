@@ -1,8 +1,11 @@
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, View } from 'react-native';
 import MainScreen from './screens/MainScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+
 
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -21,18 +24,28 @@ import StatScreen from './screens/StatScreen'; //추가
 import MainScreenTest from './screens/MainScreen_test'; //추가
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+  checkToken();
+}, []);
+
+const checkToken = async () => {
+  const accessToken = await AsyncStorage.getItem('accessToken');
+  setIsLoggedIn(!!accessToken); // 토큰이 있으면 true, 없으면 false 설정
+};
+
+
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* 모든 페이지 구현 완료시 삭제 예정 */}
-        <Stack.Screen options={{ headerShown: false }} name="Main" component={MainScreen} />
-        {/* 추가 */}
-         <Stack.Screen options={{ headerShown: false }} name="MainT" component={MainScreenTest} />
-        {/* 완료 */}
-        <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} /> 
+      <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+
+      <Stack.Screen options={{ headerShown: false }} name="MainT" component={MainScreenTest} />
+
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+
         {/* 완료 */}
         <Stack.Screen options={{ headerShown: false }} name="FindPw" component={FindPasswordScreen} />
         {/* 완료 */}

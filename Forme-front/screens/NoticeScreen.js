@@ -154,7 +154,7 @@ const NoticeScreen = () => {
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} Community>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>

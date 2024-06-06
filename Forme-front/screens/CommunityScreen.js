@@ -290,7 +290,7 @@ const CommunityScreen = () => {
               ) : (
                 <View style={[styles.worseBox, {height: 25}]}></View>
             ))}
-                  <Text style={styles.defaultText}>{ageAchieve}</Text>
+                  <Text style={styles.defaultText}>{Math.round(ageAchieve*100)/100}</Text>
                   <Text style={styles.defaultText}>또래</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
@@ -302,7 +302,7 @@ const CommunityScreen = () => {
               ) : (
                 <View style={[styles.betterBox, {height: 35}]}></View>
             ))}
-                  <Text style={styles.defaultText}>{myAchieve}</Text>
+                  <Text style={styles.defaultText}>{Math.round(myAchieve*100)/100}</Text>
                   <Text style={styles.defaultText}>나</Text>
                 </View>
                 </View>
@@ -332,7 +332,7 @@ const CommunityScreen = () => {
                 <View style={[styles.worseBox, {height: 25}]}></View>
             ))}
                 
-                  <Text style={styles.defaultText}>{genAchieve}</Text>
+                  <Text style={styles.defaultText}>{Math.round(genAchieve*100)/100}</Text>
                   <Text style={styles.defaultText}>{genderData}</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
@@ -344,7 +344,7 @@ const CommunityScreen = () => {
               ) : (
                 <View style={[styles.betterBox, {height: 35}]}></View>
             ))}
-                  <Text style={styles.defaultText}>{myAchieve}</Text>
+                  <Text style={styles.defaultText}>{Math.round(myAchieve*100)/100}</Text>
                   <Text style={styles.defaultText}>나</Text>
                 </View>
             </View>
@@ -376,7 +376,7 @@ const CommunityScreen = () => {
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} Community>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>

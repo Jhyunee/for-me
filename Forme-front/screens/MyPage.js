@@ -41,7 +41,7 @@ const MyPageScreen = () => {
             'Refresh-Token': refreshToken
           }
         });
-        console.log(response.data);
+////
         // null이나 undefined일 때 0으로 처리
         setAchieve(response.data.achieve?.achieve ?? 0);
         setReward(response.data.reward.reward ?? 0);
@@ -49,7 +49,6 @@ const MyPageScreen = () => {
         setUserId(response.data.userInfo?.userId ?? '');
         setUserName(response.data.userInfo?.name ?? '');
         setUserEmail(response.data.userInfo?.email ?? '');
-        
         const currentDate = new Date();
         const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
         // 이번 달 일수로 1일 노력금 계산
@@ -185,7 +184,7 @@ const MyPageScreen = () => {
         <Text style={styles.bigFont}>이번 달 쌓인 노력금</Text>
         <Text style={styles.defaultText}>{saving}원</Text>
         <Text style={styles.bigFont}>오늘의 달성율</Text>
-        <Text style={styles.defaultText}>{achieve}%</Text>
+        <Text style={styles.defaultText}>{Math.floor(achieve)}%</Text>
       </View>
       <View style={styles.separator} />
       <View style={styles.rightContainer}>
@@ -247,7 +246,7 @@ const MyPageScreen = () => {
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} Community>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
       </View>
