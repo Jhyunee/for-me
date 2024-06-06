@@ -8,10 +8,28 @@ import HorizontalLine from '../components/HorizontalLine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
+
+
+
+
 const StatScreen = () => {
   const navigation = useNavigation();
-  const [selectedStatPeriod, setSelectedStatPeriod] = useState('year');
-  const [selectedCategoryPeriod, setSelectedCategoryPeriod] = useState('year');
+  // 선택된 기간을 위한 상태 변수 정의
+  const [selectedStatPeriod, setSelectedStatPeriod] = useState('yy');
+  const [selectedCategoryPeriod, setSelectedCategoryPeriod] = useState('yy');
+
+  const [resAchieve, setResAchieve] = useState([]);
+  const [resCategory, setResCategory] = useState([]);
+
+  // 선택된 기간 변경을 처리하는 핸들러 함수
+  const handleStatPeriodChange = (period) => {
+    setSelectedStatPeriod(period);
+  };
+
+  const handleCategoryPeriodChange = (period) => {
+    setSelectedCategoryPeriod(period);
+  };
+
   const [fontsLoaded] = useFonts({
     'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
     'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
@@ -21,82 +39,81 @@ const StatScreen = () => {
     return <StatusBar />;
   }
 
+  // Axios 요청을 수정하여 선택된 기간을 사용하도록 업데이트합니다.
   useEffect(() => {
     const fetchData = async () => {
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
-        const refreshToken = await AsyncStorage.getItem('refreshToken');
-
-        const response = await axios.get('http://172.16.11.224.61:8080/api/statics/checklist', {
+        const refreshToken = await AsyncStorage.getItem('refreshToken');;
+        // 기존 코드와 동일하게 작성하되, selectedStatPeriod와 selectedCategoryPeriod를 사용하여 요청을 보냅니다.
+        const response = await axios.get('http://172.16.11.224:8080/api/statics/checklist', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
+          },
+          params: {
+            selectedStatPeriod,
+            selectedCategoryPeriod
           }
         });
-        console.log(response.data);
-
+        // 받은 데이터를 처리합니다.
+        if (response.status === 200) {
+          console.log(response.data);
+        setResAchieve(response.data.achieve ?? []);
+        setResCategory(response.data.category ?? []);
+      } else {
+          // 인증 실패 또는 기타 오류
+          let errorMessage = '알 수 없는 오류가 발생했습니다.';
+          if (response.status === 401) {
+              errorMessage = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
+          } else if (response.status === 500) {
+              errorMessage = '서버에 문제가 발생했습니다. 나중에 다시 시도해주세요.';
+          }
+          Alert.alert('Error', errorMessage);
+      }
       } catch (error) {
         console.error('Error', error);
       }
     };
     fetchData();
-  }, []);
-
-  const handleStatPeriodChange = (period) => {
-    setSelectedStatPeriod(period);
-  };
-
-  const handleCategoryPeriodChange = (period) => {
-    setSelectedCategoryPeriod(period);
-
-  };
+  }, [selectedStatPeriod, selectedCategoryPeriod]); // 기간이 변경될 때마다 useEffect가 실행됩니다.
  
 
-  const data = {
-    year: [
-      { value: 5, label: "'19" },
-      { value: 6, label: "'20" },
-      { value: 7, label: "'21" },
-      { value: 8, label: "'22" },
-      { value: 9, label: "'23" },
-      { value: 2, label: "'24" },
-    ],
-    month: [
-      { value: 4, label: "Jan" },
-      { value: 5, label: "Feb" },
-      { value: 6, label: "Mar" },
-      { value: 7, label: "Apr" },
-      { value: 10, label: "May" },
-      { value: 9, label: "Jun" },
-    ],
-    week: [
-      { value: 1, label: "1주차" },
-      { value: 2, label: "2주차" },
-      { value: 3, label: "3주차" },
-      { value: 4, label: "4주차" },
-      { value: 5, label: "5주차" },
-      { value: 6, label: "6주차" },
-    ],
-  }
+  const categories = ["건강", "일상", "공부", "취미", "돈관리"];
   const categoryColors = ['#6A9DFF', '#97BAFF', '#B9D0FF', '#CDCDCD', '#B2B2B2'];
-  const categoryData = {
-    year: [{ category: '운동', count: 10 }, { category: '독서', count: 8 }, { category: '공부', count: 7 }, { category: '요리', count: 5 }, { category: '여행', count: 3 }],
-    month: [{ category: '운동', count: 5 }, { category: '독서', count: 4 }, { category: '공부', count: 4 }, { category: '요리', count: 2 }, { category: '프로그래밍', count: 1 }],
-    week: [{ category: '독서', count: 3 }, { category: '공부', count: 3 }, { category: '요리', count: 2 }, { category: '프로그래밍', count: 1 }, { category: '여행', count: 1 }]
-  };
+  const categoryData = [];
+  const statData = [];
 
-  const CategoryRanking = ({ data }) => {
-    return (
-      <View style={styles.categoryContainer}>
-      {data.map((item, index) => (
-        <View key={index} style={[styles.categoryItemContainer, { backgroundColor: categoryColors[index] }]}>
-          <Text style={styles.categoryItem}>{`${index + 1} ${item.category}`}</Text>
-          <Text style={styles.categoryCount}>{item.count}회</Text>
-        </View>
-      ))}
-    </View>
-    );
-  };
+
+  
+   categories.forEach(category => {
+     // responseData에서 해당 카테고리를 찾습니다.
+     const found = resCategory.find(item => item.category === category);
+     // responseData에서 찾은 경우 count 값을 사용하고, 없는 경우 count 값을 0으로 설정합니다.
+     categoryData.push({ category, count: found ? found.category_count : 0 });
+   });
+  /*
+  resCategory.forEach(item => {
+    categoryData.push({category: item.category, category_count: item.category_count})
+  })
+    */
+
+  resAchieve.forEach(item => {
+    statData.push({ ymd: item.ymd, rate: item.rate });
+  });
+  
+  const transformedData = categoryData.map(item => ({
+    value: item.count,
+    label: item.category
+  }));
+  
+  console.log(transformedData);
+
+  console.log(categoryData);
+  //[{"category": "건강", "count": 0}, {"category": "일상", "count": 0}, {"category": "공부", "count": 0}, {"category": "취미", "count": 0}, {"category": "돈관리", "count": 0}]
+  console.log(statData);
+  //[{"rate": 0.0139, "ymd": 2024}]
+
 
    // svg 문제로 일단 하드코딩 해둠
    const HomeSvg = `
@@ -154,64 +171,70 @@ const StatScreen = () => {
         <Text style={styles.subtitle}>체크리스트 달성율 통계</Text>
         <View style={styles.graphPeriodButtons}>
             <TouchableOpacity
-              style={[styles.periodButton, selectedStatPeriod === 'year' && styles.selectedPeriodButton]}
-              onPress={() => handleStatPeriodChange('year')}
+              style={[styles.periodButton, selectedStatPeriod === 'yy' && styles.selectedPeriodButton]}
+              onPress={() => handleStatPeriodChange('yy')}
             >
               <Text style={styles.periodButtonText}>연간</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.periodButton, selectedStatPeriod === 'month' && styles.selectedPeriodButton]}
-              onPress={() => handleStatPeriodChange('month')}
+              style={[styles.periodButton, selectedStatPeriod === 'mm' && styles.selectedPeriodButton]}
+              onPress={() => handleStatPeriodChange('mm')}
             >
               <Text style={styles.periodButtonText}>월간</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.periodButton, selectedStatPeriod === 'week' && styles.selectedPeriodButton]}
-              onPress={() => handleStatPeriodChange('week')}
+              style={[styles.periodButton, selectedStatPeriod === 'ww' && styles.selectedPeriodButton]}
+              onPress={() => handleStatPeriodChange('ww')}
             >
               <Text style={styles.periodButtonText}>주간</Text>
             </TouchableOpacity>
           </View>
         <View style={styles.chartBox}>
-          <BarChart
+          {<BarChart
             barMarginBottom={0} // x축 두께 늘리면 얘도 늘려줌;
-            barWidth={22} // bar 두께
-            noOfSections={1} // 세로축 섹션
-            barBorderRadius={4} // 모서리 둥글게
-            frontColor="#508BFF" // bar 색상
-            data={data[selectedStatPeriod]}
+          //  noOfSections={1} // 세로축 섹션
+           barBorderRadius={4} // 모서리 둥글게
+          frontColor="#508BFF" // bar 색상
+            data={transformedData}
             yAxisThickness={0} // Y축 두께
-            xAxisThickness={0} // X축 두께
-            hideRules // 기준선 지우기
+           xAxisThickness={0} // X축 두께
+         //   hideRules // 기준선 지우기
             //spacing={15}
-            stepHeight={180}
+         //   stepHeight={180}
             maxValue={10}
-          />
+          />}
         </View>
       </View>
       <View style={styles.achievementCategory}>
       <Text style={styles.subtitle}>최다 달성 카테고리</Text>
       <View style={styles.categoryPeriodButtons}>
             <TouchableOpacity
-              style={[styles.periodButton, selectedCategoryPeriod === 'year' && styles.selectedPeriodButton]}
-              onPress={() => handleCategoryPeriodChange('year')}
+              style={[styles.periodButton, selectedCategoryPeriod === 'yy' && styles.selectedPeriodButton]}
+              onPress={() => handleCategoryPeriodChange('yy')}
             >
               <Text style={styles.periodButtonText}>연간</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.periodButton, selectedCategoryPeriod === 'month' && styles.selectedPeriodButton]}
-              onPress={() => handleCategoryPeriodChange('month')}
+              style={[styles.periodButton, selectedCategoryPeriod === 'mm' && styles.selectedPeriodButton]}
+              onPress={() => handleCategoryPeriodChange('mm')}
             >
               <Text style={styles.periodButtonText}>월간</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.periodButton, selectedCategoryPeriod === 'week' && styles.selectedPeriodButton]}
-              onPress={() => handleCategoryPeriodChange('week')}
+              style={[styles.periodButton, selectedCategoryPeriod === 'ww' && styles.selectedPeriodButton]}
+              onPress={() => handleCategoryPeriodChange('ww')}
             >
               <Text style={styles.periodButtonText}>주간</Text>
             </TouchableOpacity>
           </View>
-          <CategoryRanking data={categoryData[selectedCategoryPeriod]}/>
+          <View style={styles.categoryContainer}>
+        {categoryData.map((item, index) => (
+          <View key={index} style={[styles.categoryItemContainer, { backgroundColor: categoryColors[index % categoryColors.length] }]}>
+            <Text style={styles.categoryItem}>{`${index + 1} ${item.category}`}</Text>
+            <Text style={styles.categoryCount}>{item.count}회</Text>
+          </View>
+        ))}
+      </View>
         </View>
         <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
@@ -227,7 +250,7 @@ const StatScreen = () => {
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
+          <TouchableOpacity style={styles.menuIcon}  onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>

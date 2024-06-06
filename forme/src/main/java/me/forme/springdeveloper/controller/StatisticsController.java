@@ -9,8 +9,10 @@ import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import me.forme.springdeveloper.service.StatisticsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +25,8 @@ public class StatisticsController {
 
 
     @GetMapping("/api/statics/checklist")
-    public Map<String, List<? extends Object>> getAllStats() {
+    public Map<String, List<? extends Object>> getAllStats(@RequestParam String selectedStatPeriod, @RequestParam String selectedCategoryPeriod) {
         String userId = getUserIdFromTokenService.getUserIdFromToken();
-        return statisticsService.getStats(userId);
+        return statisticsService.getStats(userId, selectedStatPeriod, selectedCategoryPeriod);
     }
 }
