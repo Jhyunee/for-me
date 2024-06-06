@@ -32,8 +32,8 @@ public class ChecklistApiController {
 
 
     //체크리스트 조회 (선택한 날짜)
-    @GetMapping("/api/checklists/{select_date}")
-    public Map<String, List<Checklist>> index(@PathVariable LocalDate select_date) {
+    @GetMapping("/api/checklists")
+    public Map<String, List<Checklist>> index(@RequestParam LocalDate select_date) {
         String userId = getUserIdFromTokenService.getUserIdFromToken();
         return checklistService.getChecklistsByDate(select_date, userId);
     }
@@ -55,8 +55,8 @@ public class ChecklistApiController {
     }
 
     //체크리스트 수정 (request dto에 user_id 전달 > token 전달로 수정 필요)
-    @PatchMapping("/api/checklists/{id}")
-    public ResponseEntity<Checklist> update(@PathVariable Long id,
+    @PatchMapping("/api/checklists")
+    public ResponseEntity<Checklist> update(@RequestParam Long id,
                                             @RequestBody UpdateChecklistRequest dto) throws JsonProcessingException {
 
         flaskClientService.sendToFlaskUpdate(dto);
@@ -70,8 +70,8 @@ public class ChecklistApiController {
     }
 
     //체크리스트 삭제
-    @PatchMapping("/api/checklists/delete/{id}")
-    public ResponseEntity<Checklist> delete(@PathVariable Long id) {
+    @PatchMapping("/api/checklists/delete")
+    public ResponseEntity<Checklist> delete(@RequestParam Long id) {
         // 각 체크리스트 공유의 id가 있기 때문에 user_id 불필요
         Checklist deleted = checklistService.delete(id);
         return (deleted != null) ?

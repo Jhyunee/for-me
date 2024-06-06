@@ -33,8 +33,8 @@ public class CServiceApiController {
     }
 
     // 고객센터 글 (1개) 조회
-    @GetMapping("/api/mypage/services/{id}")
-    public ResponseEntity<CServiceResponse> findService(@PathVariable long id) {
+    @GetMapping("/api/mypage/services")
+    public ResponseEntity<CServiceResponse> findService(@RequestParam long id) {
         CService service = cServiceService.findById(id);
 
         return ResponseEntity.ok()
@@ -53,8 +53,8 @@ public class CServiceApiController {
     }
 
     // 고객센터 글 삭제
-    @DeleteMapping("/api/mypage/services/{id}")
-    public ResponseEntity<Void> deleteService(@PathVariable long id) {
+    @DeleteMapping("/api/mypage/services")
+    public ResponseEntity<Void> deleteService(@RequestParam long id) {
         cServiceService.delete(id);
 
         return ResponseEntity.ok()
@@ -62,8 +62,8 @@ public class CServiceApiController {
     }
 
     // 고객센터 글 수정
-    @PatchMapping("/api/mypage/services/{id}")
-    public ResponseEntity<CService> updateService(@PathVariable long id, @RequestBody UpdateCServiceRequest request) {
+    @PatchMapping("/api/mypage/services")
+    public ResponseEntity<CService> updateService(@RequestParam long id, @RequestBody UpdateCServiceRequest request) {
         CService updatedService = cServiceService.update(id, request);
 
         return (updatedService != null) ?

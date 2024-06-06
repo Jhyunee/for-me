@@ -30,8 +30,8 @@ public class NoticeApiController {
     }
 
     // 공지글 하나만 조회
-    @GetMapping("/api/mypage/notices/{id}")
-    public ResponseEntity<NoticeResponse> findNotice(@PathVariable long id) {
+    @GetMapping("/api/mypage/notices")
+    public ResponseEntity<NoticeResponse> findNotice(@RequestParam long id) {
         Notice notice = noticeService.findById(id);
         return ResponseEntity.ok()
                 .body(new NoticeResponse(notice));
@@ -46,8 +46,8 @@ public class NoticeApiController {
     }
 
     // 공지글 삭제
-    @DeleteMapping("/api/mypage/notices/{id}")
-    public ResponseEntity<Void> deleteService(@PathVariable long id) {
+    @DeleteMapping("/api/mypage/notices")
+    public ResponseEntity<Void> deleteService(@RequestParam long id) {
         noticeService.delete(id);
 
         return ResponseEntity.ok()

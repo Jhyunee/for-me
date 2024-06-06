@@ -34,8 +34,8 @@ public class NotificationApiController {
     }
 
     // 알림글 확인
-    @PatchMapping("/api/notifications/{notiId}")
-    public ResponseEntity<Notification> read(@PathVariable Long notiId) {
+    @PatchMapping("/api/notifications")
+    public ResponseEntity<Notification> read(@RequestParam Long notiId) {
         Notification read = notificationService.read(notiId);
         return (read != null) ?
                 ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
@@ -43,8 +43,8 @@ public class NotificationApiController {
     }
 
     // 알림글 삭제
-    @DeleteMapping("/api/notifications/{notiId}")
-    public ResponseEntity<Void> deleteService(@PathVariable long notiId) {
+    @DeleteMapping("/api/notifications")
+    public ResponseEntity<Void> deleteService(@RequestParam long notiId) {
         notificationService.delete(notiId);
 
         return ResponseEntity.ok()

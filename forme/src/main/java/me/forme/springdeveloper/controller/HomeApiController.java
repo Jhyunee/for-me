@@ -7,6 +7,7 @@ import me.forme.springdeveloper.service.ChecklistService;
 import me.forme.springdeveloper.service.GetUserIdFromTokenService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -23,8 +24,8 @@ public class HomeApiController {
 
     private LocalDate dateTime = LocalDate.now();
 
-    @GetMapping("/api/home/{select_date}")
-    public Map<String, List<Checklist>> index(@PathVariable LocalDate select_date){
+    @GetMapping("/api/home")
+    public Map<String, List<Checklist>> index(@RequestParam LocalDate select_date){
         String userId = getUserIdFromTokenService.getUserIdFromToken();
         return checklistService.getChecklistsByDate(select_date, userId);
     }
