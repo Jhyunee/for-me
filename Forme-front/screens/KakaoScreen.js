@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 
 const REST_API_KEY = '19907ce56a00e249cab7575cf04c3494';
-const REDIRECT_URI = 'https://172.16.234.245:8081/Home';
+const REDIRECT_URI = 'https://172.16.11.224:8081/Home';
 const INJECTED_JAVASCRIPT = `window.ReactNativeWebView.postMessage('message from webView')`;
 
 const KakaoLogin = () => {
