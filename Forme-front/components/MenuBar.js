@@ -34,7 +34,7 @@ const HomeSvg = `
    `;
 
 
-const MenuBar = ({ onSelect }) => {
+const MenuBar = ({ onSelect, onWritePress  }) => {
   return (
     <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
@@ -50,7 +50,7 @@ const MenuBar = ({ onSelect }) => {
           <TouchableOpacity style={styles.menuIcon} onPress={() => onSelect('MyPage')}>
           <SvgXml xml={UserSvg} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuIcon}  onPress={() => onSelect('MainT')}>
+          <TouchableOpacity style={styles.menuIcon}  onPress={onWritePress}>
           <SvgXml xml={WriteSvg} />
           </TouchableOpacity>
         </View>

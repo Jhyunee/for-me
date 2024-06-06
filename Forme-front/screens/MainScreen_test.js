@@ -72,7 +72,7 @@ const MainScreen_test = () => {
             });
       
             if (response.status === 201) {
-              console.log(response.data);
+              //console.log(response.data);
             } else {
               console.log('error', response);
             }
@@ -130,7 +130,7 @@ const MainScreen_test = () => {
             try {
                 const selectedDate = new Date().toISOString().split('T')[0];
                 const select_date = selectedDate;
-                console.log(select_date);
+                //console.log(select_date);
                 const accessToken = await AsyncStorage.getItem('accessToken');
                 const refreshToken = await AsyncStorage.getItem('refreshToken');
                 const decodedToken = jwtDecode(accessToken);
@@ -238,7 +238,7 @@ const MainScreen_test = () => {
                     </View>
                  </TouchableWithoutFeedback>
             </Modal>
-            <MenuBar onSelect={handleMenuSelect} />
+            <MenuBar onSelect={handleMenuSelect} onWritePress={FillModeAndModal} />
         </SafeAreaView>
     )
 }
