@@ -190,7 +190,7 @@ const StatScreen = () => {
             </TouchableOpacity>
           </View>
         <View style={styles.chartBox}>
-          {<BarChart
+        {transformedData.length > 3 && <BarChart
             barMarginBottom={0} // x축 두께 늘리면 얘도 늘려줌;
           //  noOfSections={1} // 세로축 섹션
            barBorderRadius={4} // 모서리 둥글게
