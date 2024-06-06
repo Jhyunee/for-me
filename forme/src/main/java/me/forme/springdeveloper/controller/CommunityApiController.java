@@ -2,25 +2,14 @@ package me.forme.springdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.forme.springdeveloper.domain.Reward;
-import me.forme.springdeveloper.dto.ShowChecklistRequest;
-import me.forme.springdeveloper.dto.ShowCommunityRequest;
-import me.forme.springdeveloper.repository.RewardRepository;
-import me.forme.springdeveloper.service.ChecklistService;
 import me.forme.springdeveloper.service.CommunityService;
 import me.forme.springdeveloper.service.GetUserIdFromTokenService;
-import me.forme.springdeveloper.service.RewardService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -40,7 +29,7 @@ public class CommunityApiController {
     // 커뮤니티 전체
     @GetMapping("/community")
     //public Map<String, Map<?,?>> commWhole(ShowChecklistRequest checkRequest){
-    public Map<String, Object> commWhole(ShowChecklistRequest checkRequest){
+    public Map<String, Object> commWhole(){
         String userId = getUserIdFromTokenService.getUserIdFromToken();
         Map<String, Object> map = new HashMap<>();
         // 랜덤 체크리스트 추출

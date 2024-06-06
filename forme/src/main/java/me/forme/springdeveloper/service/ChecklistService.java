@@ -6,7 +6,6 @@ import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.domain.Done;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
 import me.forme.springdeveloper.dto.AddDoneRequest;
-import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 
 import me.forme.springdeveloper.repository.ChecklistRepository;
@@ -29,9 +28,9 @@ public class ChecklistService {
 
 
     //체크리스트 조회 메서드 (done 적용 버전)
-    public Map<String, List<Checklist>> getChecklistsByDate(ShowChecklistRequest request, String userId) {
+    public Map<String, List<Checklist>> getChecklistsByDate(LocalDate select_date, String userId) {
         // 해당 날짜에 완료된 Done 엔티티 가져오기
-        List<Done> doneList = doneRepository.findByUserAndDoneDate(userId, request.getSelect_date());
+        List<Done> doneList = doneRepository.findByUserAndDoneDate(userId, select_date);
 
         // 완료된 체크리스트의 ID 목록 추출
         List<Long> doneChecklistIds = doneList.stream()
@@ -39,7 +38,7 @@ public class ChecklistService {
                 .collect(Collectors.toList());
 
         // 모든 체크리스트 가져오기
-        List<Checklist> allChecklists = checklistRepository.findByUserAndDate(userId, request.getSelect_date());
+        List<Checklist> allChecklists = checklistRepository.findByUserAndDate(userId, select_date);
 
         // 완료된 체크리스트와 완료되지 않은 체크리스트를 구분
         List<Checklist> doneChecklists = allChecklists.stream()

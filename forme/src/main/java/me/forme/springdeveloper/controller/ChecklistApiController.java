@@ -7,7 +7,6 @@ import me.forme.springdeveloper.domain.Checklist;
 import me.forme.springdeveloper.domain.Done;
 import me.forme.springdeveloper.dto.AddChecklistRequest;
 import me.forme.springdeveloper.dto.AddDoneRequest;
-import me.forme.springdeveloper.dto.ShowChecklistRequest;
 import me.forme.springdeveloper.dto.UpdateChecklistRequest;
 import me.forme.springdeveloper.service.ChecklistService;
 import me.forme.springdeveloper.service.FlaskClientService;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +32,10 @@ public class ChecklistApiController {
 
 
     //체크리스트 조회 (선택한 날짜)
-    @GetMapping("/api/checklists")
-    public Map<String, List<Checklist>> index(@RequestBody ShowChecklistRequest request) {
+    @GetMapping("/api/checklists/{select_date}")
+    public Map<String, List<Checklist>> index(@PathVariable LocalDate select_date) {
         String userId = getUserIdFromTokenService.getUserIdFromToken();
-        return checklistService.getChecklistsByDate(request, userId);
+        return checklistService.getChecklistsByDate(select_date, userId);
     }
 
     //체크리스트 생성 (request dto에 user_id 전달 > token 전달로 수정 필요)
