@@ -44,6 +44,24 @@ const StatScreen = () => {
     navigation.navigate(selection);
   };
 
+  // 렌더링이 안되면 쓸 데이터
+  const data = {
+    year: [
+      { value: 5, label: "'19" },
+      { value: 6, label: "'20" },
+      { value: 7, label: "'21" },
+      { value: 8, label: "'22" },
+      { value: 9, label: "'23" },
+      { value: 2, label: "'24" },
+    ],
+    month: [
+      { value: 4, label: "Jan" },
+      { value: 5, label: "Feb" },
+      { value: 6, label: "Mar" },
+      { value: 6, label: "6주차" },
+    ],
+  }
+
   // Axios 요청을 수정하여 선택된 기간을 사용하도록 업데이트합니다.
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +81,7 @@ const StatScreen = () => {
         });
         // 받은 데이터를 처리합니다.
         if (response.status === 200) {
-          console.log(response.data);
+          //console.log(response.data);
         setResAchieve(response.data.achieve ?? []);
         setResCategory(response.data.category ?? []);
       } else {
@@ -113,12 +131,12 @@ const StatScreen = () => {
   }),
 );
   
-  console.log(transformedData);
-  console.log(transformedData.length);
+  //console.log(transformedData);
+ // console.log(transformedData.length);
 
-  console.log(categoryData);
+  //console.log(categoryData);
   //[{"category": "건강", "count": 0}, {"category": "일상", "count": 0}, {"category": "공부", "count": 0}, {"category": "취미", "count": 0}, {"category": "돈관리", "count": 0}]
-  console.log(statData);
+ // console.log(statData);
   //[{"rate": 0.0139, "ymd": 2024}]
 
 
@@ -170,7 +188,7 @@ const StatScreen = () => {
           //  noOfSections={1} // 세로축 섹션
            barBorderRadius={4} // 모서리 둥글게
           frontColor="#508BFF" // bar 색상
-            data={transformedData}
+            data={transformedData} //!! 렌더링 안된다면  data={data[selectedStatPeriod]} 사용
             yAxisThickness={0} // Y축 두께
            xAxisThickness={0} // X축 두께
          //   hideRules // 기준선 지우기
