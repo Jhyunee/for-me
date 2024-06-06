@@ -37,13 +37,13 @@ const CommunityScreen = () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-        const response = await axios.get('http://172.30.1.61:8080/community', {
+        const response = await axios.get('http://172.16.11.224:8080/community', {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Refresh-Token': refreshToken
           }
         });
-        // console.log(response.data);
+        console.log(response.data);
         setAgeAchieve(response.data.achieve.ageAchieve ?? 0);
         setGenAchieve(response.data.achieve.genAchieve ?? 0);
         setMyAchieve(response.data.achieve.myAchieve ?? 0);
@@ -91,6 +91,7 @@ const CommunityScreen = () => {
       console.error('로그아웃 도중 문제가 발생했습니다.', error);
     }
   };
+
 
   // svg 문제로 일단 하드코딩 해둠
   const HomeSvg = `
@@ -180,7 +181,7 @@ const CommunityScreen = () => {
                   horizontal
                   renderItem={({ item }) => (
                     <View style={styles.moneyContainer}>
-                      <Text style={styles.rewardText}>{item.monthly_reward}</Text>
+                      <Text style={styles.rewardText}>{Math.floor(item.monthly_reward)}원</Text>
                       <Text style={styles.dateText}>{item.dateid}월</Text>
                     </View>
                   )}
@@ -267,29 +268,40 @@ const CommunityScreen = () => {
 
         <View style={styles.compareContainer}>
           <View style={styles.blueCompareContainer}>
-            <Text style={styles.defaultText}>또래 유저들보다</Text>
-            {ageAchieve > myAchieve ? (
-                    <Text style={styles.defaultText}>달성률이 낮아요</Text>
-                  ) : (
-                    <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
-                  )}
+          {ageAchieve == myAchieve ? (
+              <Text style={styles.defaultText}>또래 유저들과</Text>
+            ) : (<Text style={styles.defaultText}>또래 유저들보다</Text>)}
+             {ageAchieve == myAchieve ? (
+            <Text style={styles.defaultText}>달성률이 같아요</Text>
+            ) : (
+              ageAchieve > myAchieve ? (
+              <Text style={styles.defaultText}>달성률이 낮아요</Text>
+              ) : (
+               <Text style={styles.defaultText}>달성률이 높아요</Text>
+            ))}
             <View style={styles.compareWrapper1}>
                 <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                  {ageAchieve > myAchieve ? (
-                    <View style={[styles.worseBox, {height: 35}]}></View>
-                  ) : (
-                    <View style={[styles.worseBox, {height: 25}]}></View>
-                  )}
+                {ageAchieve == myAchieve ? (
+            <View style={[styles.worseBox, {height: 25}]}></View>
+            ) : (
+              ageAchieve > myAchieve ? (
+                <View style={[styles.worseBox, {height: 35}]}></View>
+              ) : (
+                <View style={[styles.worseBox, {height: 25}]}></View>
+            ))}
                   <Text style={styles.defaultText}>{ageAchieve}</Text>
                   <Text style={styles.defaultText}>또래</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                  {ageAchieve > myAchieve ? (
-                    <View style={[styles.betterBox, {height: 25}]}></View>
-                  ) : (
-                    <View style={[styles.betterBox, {height: 35}]}></View>
-                  )}
+                {ageAchieve == myAchieve ? (
+            <View style={[styles.betterBox, {height: 25}]}></View>
+            ) : (
+              ageAchieve > myAchieve ? (
+                <View style={[styles.betterBox, {height: 25}]}></View>
+              ) : (
+                <View style={[styles.betterBox, {height: 35}]}></View>
+            ))}
                   <Text style={styles.defaultText}>{myAchieve}</Text>
                   <Text style={styles.defaultText}>나</Text>
                 </View>
@@ -297,29 +309,41 @@ const CommunityScreen = () => {
               </View>
           </View>
           <View style={styles.defaultCompareContainer}>
-          <Text style={styles.defaultText}>{genderData} 유저들보다</Text>
-          {genAchieve > myAchieve ? (
-                    <Text style={styles.defaultText}>달성률이 낮아요</Text>
-                  ) : (
-                    <Text style={styles.defaultText}>열심히 달성하고 있어요</Text>
-                  )}
+            {genAchieve == myAchieve ? (
+              <Text style={styles.defaultText}>{genderData} 유저들과</Text>
+            ) : (<Text style={styles.defaultText}>{genderData} 유저들보다</Text>)}
+            {genAchieve == myAchieve ? (
+            <Text style={styles.defaultText}>달성률이 같아요</Text>
+            ) : (
+              genAchieve > myAchieve ? (
+              <Text style={styles.defaultText}>달성률이 낮아요</Text>
+              ) : (
+               <Text style={styles.defaultText}>달성률이 높아요</Text>
+            ))}
             <View style={styles.compareWrapper1}>
             <View style={styles.compareWrapper3}>
                 <View style={styles.compareWrapper2}>
-                  {genAchieve > myAchieve ? (
-                    <View style={[styles.worseBox, {height: 35}]}></View>
-                  ) : (
-                    <View style={[styles.worseBox, {height: 25}]}></View>
-                  )}
+                {genAchieve == myAchieve ? (
+            <View style={[styles.worseBox, {height: 25}]}></View>
+            ) : (
+              genAchieve > myAchieve ? (
+                <View style={[styles.worseBox, {height: 35}]}></View>
+              ) : (
+                <View style={[styles.worseBox, {height: 25}]}></View>
+            ))}
+                
                   <Text style={styles.defaultText}>{genAchieve}</Text>
                   <Text style={styles.defaultText}>{genderData}</Text>
                 </View>
                 <View style={styles.compareWrapper2}>
-                  {genAchieve > myAchieve ? (
-                    <View style={[styles.betterBox, {height: 25}]}></View>
-                  ) : (
-                    <View style={[styles.betterBox, {height: 35}]}></View>
-                  )}
+                {genAchieve == myAchieve ? (
+            <View style={[styles.betterBox, {height: 25}]}></View>
+            ) : (
+              genAchieve > myAchieve ? (
+                <View style={[styles.betterBox, {height: 25}]}></View>
+              ) : (
+                <View style={[styles.betterBox, {height: 35}]}></View>
+            ))}
                   <Text style={styles.defaultText}>{myAchieve}</Text>
                   <Text style={styles.defaultText}>나</Text>
                 </View>
@@ -340,7 +364,7 @@ const CommunityScreen = () => {
       </ScrollView>
       <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
-        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={HomeSvg} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
@@ -559,8 +583,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   compareWrapper3: {
+    paddingHorizontal:25,
     flexDirection: 'row',
     alignItems: 'flex-end',
+    justifyContent: 'center'
   },
   compareIcon: {
     width: 40,

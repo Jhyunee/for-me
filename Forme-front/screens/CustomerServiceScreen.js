@@ -191,7 +191,7 @@ const CustomerServiceScreen = () => {
       </View>
       <View style={styles.menuBar}>
         <View style={styles.iconContainer}>
-        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('MainT')}>
           <SvgXml xml={HomeSvg} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.navigate('Stat')}>
