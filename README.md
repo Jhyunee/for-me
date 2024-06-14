@@ -9,8 +9,8 @@
 ### Content
   [1. 💭 개발 동기](#-개발-동기)  <br>
   [2. 💸 기대 효과](#-기대-효과)  <br>
-  [3. 🖼️ UI & 주요 기능](#EF%B8%8F-application-ui-및-기능) <br>
-  [4. 🛠️ Tech Stack](#EF%B8%8F-tech-stack) <br>
+  [3. 🖼️ UI & 주요 기능](#%EF%B8%8F-application-ui-및-기능) <br>
+  [4. 🛠️ Tech Stack](#%EF%B8%8F-tech-stack) <br>
   [5. 🏃🏻‍♀ How to Run](#-how-to-run) <br>
   [6. 👩🏻‍💻 Devleop Parts](#-devleop-parts) <br>
   [7. 🏆 Achievements](#-achievements)
