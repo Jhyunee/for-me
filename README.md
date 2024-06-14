@@ -58,7 +58,10 @@
 
 ## 🏃🏻‍♀ How to Run
 **▶️ [AI prediction model](https://github.com/Jhyunee/for-me-classification)**
-<br><br>
+```
+Follow for-me-classification repo (linked)
+```
+<br>
 
 **▶️ Backend Server**
 ```
