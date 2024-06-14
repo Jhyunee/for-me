@@ -96,7 +96,7 @@ for-me/Forme-front/
 * **Frontend** | 프론트 개발자, 개발 환경 세팅, 시퀀스 다이어그램 설계
 
 🐹 **송지원** <a href= "https://github.com/zzixn"><img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white"/></a>
-* Frontend | 프론트 개발자, 시퀀스 다이어그램 설계
+* **Frontend** | 프론트 개발자, 시퀀스 다이어그램 설계
 
 <br><br>
 
